@@ -1788,4 +1788,232 @@
               正在执行关键能力...
               <div class="phone-progress"><span id="demoBar"></span></div>
             </div>
-            <div class="lyrics-box" aria-labe
+            <div class="lyrics-box" aria-label="歌词预览">
+              ${lyricsLinesHtml(lines.map(()=>'…'), -1)}
+            </div>
+          `
+        },
+        {
+          kpi: '补全完成：封面出现 + 歌词逐行高亮（更像真播放器）',
+          screen: () => `
+            <div class="phone-player">
+              <div class="phone-cover"><img alt="专辑封面" src="${cover}"></div>
+              <div class="phone-track">
+                <div class="phone-track-title">${title}</div>
+                <div class="phone-track-sub">${artist} · 已补全封面/歌词</div>
+                <div class="phone-minirow">
+                  <div class="phone-chip">高清封面</div>
+                  <div class="phone-chip">滚动歌词</div>
+                </div>
+              </div>
+            </div>
+            <button class="phone-cta js-phone-lyrics-play">播放并滚动歌词</button>
+            <div class="lyrics-box" id="lyricsBox">
+              ${lyricsLinesHtml(lines, 0)}
+            </div>
+          `
+        }
+      ];
+    }
+    if (type === 'ai-search') {
+      return [
+        {
+          kpi: '痛点触发：不会拼写/文件名乱码也能搜',
+          screen: () => `
+            <div class="phone-card">搜索框：输入“？？？”（拼写不确定）</div>
+            <div class="phone-card">提示：可用语音/哼唱/歌词片段</div>
+            <button class="phone-cta">按住说话：唱/说 5 秒</button>
+          `
+        },
+        {
+          kpi: '识别中：提取旋律与歌词特征',
+          screen: () => `
+            <div class="phone-card">正在识别音频特征...</div>
+            <div class="phone-card">
+              匹配中...
+              <div class="phone-progress"><span id="demoBar"></span></div>
+            </div>
+            <div class="phone-card">支持：小语种、模糊发音、断句歌词</div>
+          `
+        },
+        {
+          kpi: '结果交付：一键定位并播放/收藏',
+          screen: () => `
+            <div class="phone-card"><strong>识别结果</strong></div>
+            <div class="phone-card">Top1：Sia - Unstoppable（相似度 92%）</div>
+            <button class="phone-cta">一键播放 · 加入歌单</button>
+            <div class="phone-card">你不需要会拼写，也能快速找到想听的歌。</div>
+          `
+        }
+      ];
+    }
+    if (type === 'full-migration') {
+      return [
+        {
+          kpi: '痛点触发：换机后不想从零开始',
+          screen: () => `
+            <div class="phone-card">检测到新机连接成功</div>
+            <div class="phone-card">选择：全量迁移（推荐）</div>
+            <button class="phone-cta">开始迁移（0 流量）</button>
+            <div class="phone-card">包含：歌曲/歌单/歌词封面/播放进度/收藏</div>
+          `
+        },
+        {
+          kpi: '迁移中：边传边校验，防丢失',
+          screen: () => `
+            <div class="phone-card">正在迁移到新机...</div>
+            <div class="phone-card">
+              传输 + 校验
+              <div class="phone-progress"><span id="demoBar"></span></div>
+            </div>
+            <div class="phone-card">断点续传：中途断开也可继续。</div>
+          `
+        },
+        {
+          kpi: '迁移完成：开机即可续听原位置',
+          screen: () => `
+            <div class="phone-card"><strong>迁移完成</strong></div>
+            <div class="phone-card">歌曲 2,148 · 歌单 26 · 歌词封面已补齐</div>
+            <div class="phone-card">已恢复：上次播放《Track A》 01:23</div>
+            <button class="phone-cta">继续播放（不断档）</button>
+          `
+        }
+      ];
+    }
+
+    // 其他卖点走通用流程（仍展示开始页 + 进度 + 结果），保持原逻辑但更贴近“痛点→收益”
+    return [
+      {
+        kpi: '痛点触发：定位问题并一键解决',
+        screen: () => getStartScreen(type)
+      },
+      {
+        kpi: '执行中：关键能力正在生效',
+        screen: () => getStartScreen(type) + `
+          <div class="phone-card">
+            正在执行关键能力...
+            <div class="phone-progress"><span id="demoBar"></span></div>
+          </div>
+        `
+      },
+      {
+        kpi: '结果交付：立刻看到变化',
+        screen: () => getStartScreen(type) + `
+          <div class="phone-card">${getResultText(type)}</div>
+        `
+      }
+    ];
+  }
+
+  function getResultText(type) {
+    let result = '✅ 演示完成：卖点能力已生效，可继续下一步。';
+    if (type === 'smart-organize') result = dedupeEnabled
+      ? '✅ 已完成：去重 36 首、修复乱码 18 首、自动归档 6 个目录；之后按歌手/专辑一找就到。'
+      : '✅ 已完成：已按你的选择跳过去重；完成命名修复与自动归档，歌曲全量保留。';
+    if (type === 'storage-opt') result = '✅ 已完成：无损压缩后节省 49% 空间；手机更轻松，能装下更多歌。';
+    if (type === 'lyrics-cover') result = '✅ 已完成：歌词+封面已补全；可滚动歌词并高亮当前行，体验更像正版播放器。';
+    if (type === 'audio-fix') result = '✅ 已完成：底噪降低、爆音修复；通勤/外放更耐听。';
+    if (type === 'speaker-boost') result = '✅ 已完成：外放增强开启；更响、更稳，开大也不破音。';
+    if (type === 'ai-search') result = '✅ 已完成：无需会拼写，也能识别并定位到目标歌曲。';
+    if (type === 'p2p-sync') result = '✅ 已完成：歌单已同步到 2 台设备；零流量、离线完成。';
+    if (type === 'group-room') result = '✅ 已完成：房间内多人同步播放；暂停/切歌实时生效。';
+    if (type === 'hot-share') result = '✅ 已完成：热榜歌曲已直传好友；分享链路打通，传播更顺。';
+    if (type === 'device-switch') result = '✅ 已完成：新机已自动拉起 App 并恢复最近播放/历史记录。';
+    if (type === 'full-migration') result = '✅ 已完成：歌曲+歌单+进度全量迁移；开机即可续听，不从零开始。';
+    return result;
+  }
+
+  function showDemo(text) {
+    clearDemoTimers();
+    activeDemoType = inferDemoType(text);
+    const meta = getDemoMeta(activeDemoType);
+    document.getElementById('demoText').innerText = text;
+    document.getElementById('demoFocusTitle').innerText = meta.title;
+    document.getElementById('demoKpi').innerText = meta.kpi;
+    document.getElementById('demoStatus').innerText = '演示已就绪：请点击手机内按钮开始动画';
+    renderPhone(getStartScreen(activeDemoType));
+    document.getElementById('demoModal').classList.add('show');
+  }
+  function closeDemo() {
+    clearDemoTimers();
+    document.getElementById('demoModal').classList.remove('show');
+  }
+
+  // 演示动画
+  function runDemo() {
+    const status = document.getElementById('demoStatus');
+    clearDemoTimers();
+    status.innerText = '正在演示手机端操作...';
+    const flow = getRunFlow(activeDemoType);
+
+    // step 1
+    document.getElementById('demoKpi').innerText = flow[0].kpi;
+    renderPhone(flow[0].screen());
+
+    // step 2
+    demoTimers.push(setTimeout(() => {
+      document.getElementById('demoKpi').innerText = flow[1].kpi;
+      renderPhone(flow[1].screen());
+      const bar = document.getElementById('demoBar');
+      if (bar) bar.style.width = '48%';
+    }, 450));
+
+    // step 2 progress
+    demoTimers.push(setTimeout(() => {
+      const bar = document.getElementById('demoBar');
+      if (bar) bar.style.width = '88%';
+    }, 950));
+
+    // step 3
+    demoTimers.push(setTimeout(() => {
+      document.getElementById('demoKpi').innerText = flow[2].kpi;
+      renderPhone(flow[2].screen());
+      const finalText = getResultText(activeDemoType);
+      status.innerText = finalText;
+      document.getElementById('demoKpi').innerText = finalText.replace('✅ 已完成：', '').replace('✅ 演示完成：', '');
+    }, 1500));
+  }
+
+  // 直接点击手机 UI 按钮触发演示
+  document.getElementById('demoScreen').addEventListener('click', (event) => {
+    if (event.target.closest('.js-phone-start')) {
+      runDemo();
+    }
+    if (event.target.closest('.js-toggle-dedupe')) {
+      dedupeEnabled = !dedupeEnabled;
+      if (activeDemoType === 'smart-organize') {
+        renderPhone(getStartScreen('smart-organize'));
+        document.getElementById('demoStatus').innerText = dedupeEnabled
+          ? '已勾选去重：将去重 + 修复 + 归档'
+          : '已取消去重：仅修复命名与归档，重复歌曲会保留';
+      }
+    }
+    if (event.target.closest('.js-phone-audio-preview')) {
+      document.getElementById('demoStatus').innerText = '试听对比：修复后刺耳噪点减少，细节更清晰。';
+      document.getElementById('demoKpi').innerText = '前后对比：噪点位已修复，整体波形更平滑';
+    }
+    if (event.target.closest('.js-phone-lyrics-play')) {
+      clearDemoTimers();
+      const box = document.getElementById('lyricsBox');
+      if (!box) return;
+      const lines = Array.from(box.querySelectorAll('.lyric-line'));
+      let idx = 0;
+      lines.forEach(l => l.classList.remove('active'));
+      const tick = () => {
+        lines.forEach(l => l.classList.remove('active'));
+        const el = lines[idx];
+        if (el) {
+          el.classList.add('active');
+          el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        idx += 1;
+        if (idx < lines.length) {
+          demoTimers.push(setTimeout(tick, 520));
+        }
+      };
+      tick();
+    }
+  });
+</script>
+</body>
+</html>
