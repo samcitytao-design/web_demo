@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新音乐APP 全链路用户旅程 - 交互Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3f5f8;
+    --bg2: #ffffff;
+    --bg3: #f8fafc;
+    --border: rgba(15, 23, 42, 0.08);
+    --border-bright: rgba(15, 23, 42, 0.12);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    --c1: #1b8cff;
+    --c2: #7c6cf0;
+    --c3: #10b981;
+    --c4: #f97316;
+    --c5: #ec4899;
+
+    --c1-dim: rgba(27, 140, 255, 0.12);
+    --c2-dim: rgba(124, 108, 240, 0.12);
+    --c3-dim: rgba(16, 185, 129, 0.12);
+    --c4-dim: rgba(249, 115, 22, 0.12);
+    --c5-dim: rgba(236, 72, 153, 0.12);
+
+    --pain: #ef4444;
+    --pain-dim: rgba(239, 68, 68, 0.1);
+    --guide: #d97706;
+    --guide-dim: rgba(245, 158, 11, 0.14);
+    --feature: #059669;
+    --feature-dim: rgba(5, 150, 105, 0.1);
+
+    --shareit-blue: #1b8cff;
+    --shareit-blue-press: #1578d9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* 导航栏 */
+  .navbar {
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 99;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  }
+  .nav-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .nav-btn:hover {
+    border-color: var(--border-bright);
+    color: var(--text-primary);
+    background: #fff;
+  }
+  .nav-btn.active {
+    background: var(--shareit-blue);
+    color: #fff;
+    border-color: var(--shareit-blue);
+  }
+
+  /* 头部 */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeDown 0.8s ease both;
+  }
+  .header .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: clamp(24px, 4vw, 38px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #0f172a 20%, #475569);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .header .sub {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* 图例 */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+    animation: fadeDown 0.8s 0.2s ease both;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+  /* 阶段模块 */
+  .stage {
+    position: relative;
+    margin-bottom: 8px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .stage:nth-child(1) { animation-delay:0.1s; }
+  .stage:nth-child(2) { animation-delay:0.25s; }
+  .stage:nth-child(3) { animation-delay:0.4s; }
+  .stage:nth-child(4) { animation-delay:0.55s; }
+
+  .stage-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage-header::before {
+    content: ''; position:absolute; left:0; top:0; bottom:0; width:3px;
+    border-radius: 3px 0 0 3px;
+  }
+  .stage-header:hover { background: #f8fafc; }
+
+  .stage-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight:700; letter-spacing:0.1em;
+    padding:3px 8px; border-radius:4px; flex-shrink:0;
+  }
+  .stage-title { font-size:15px; font-weight:700; flex:1; }
+  .stage-subtitle { font-size:11px; color:var(--text-muted); font-weight:300; }
+  .stage-toggle { font-size:18px; color:var(--text-muted); transition:transform 0.3s; }
+  .stage.open .stage-toggle { transform:rotate(180deg); }
+  .stage.open .stage-header { border-radius:12px 12px 0 0; }
+
+  .stage-body {
+    display: none;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+  }
+  .stage.open .stage-body { display:block; }
+
+  /* 四列布局 */
+  .flow-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap:0;
+  }
+  .flow-col {
+    padding:20px 16px;
+    border-right:1px solid var(--border);
+    position:relative;
+  }
+  .flow-col:last-child { border-right:none; }
+  .col-label {
+    display:flex; align-items:center; gap:6px;
+    font-size:10px; font-weight:700; letter-spacing:0.12em;
+    text-transform:uppercase; margin-bottom:14px; padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .col-icon { font-size:13px; }
+
+  /* 卡片 */
+  .card {
+    border-radius:8px; padding:10px 12px; margin-bottom:8px;
+    font-size:12px; line-height:1.65; border:1px solid;
+    position:relative; transition:0.2s; cursor:default;
+  }
+  .card:hover { transform:translateY(-1px); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08); }
+  .card:last-child { margin-bottom:0; }
+  .card-path { background: var(--c1-dim); border-color: rgba(27, 140, 255, 0.28); color: #0c4a6e; }
+  .card-pain { background: var(--pain-dim); border-color: rgba(239, 68, 68, 0.25); color: #991b1b; }
+  .card-guide { background: var(--guide-dim); border-color: rgba(217, 119, 6, 0.3); color: #92400e; cursor:pointer; }
+  .card-feature { background: var(--feature-dim); border-color: rgba(5, 150, 105, 0.28); color: #065f46; cursor:pointer; }
+
+  .card-tag {
+    display:inline-block; font-size:9px; font-weight:700; letter-spacing:0.08em;
+    padding:1px 6px; border-radius:3px; margin-bottom:6px; text-transform:uppercase;
+  }
+  .tag-path { background: rgba(27, 140, 255, 0.18); color: #0369a1; }
+  .tag-pain { background: rgba(239, 68, 68, 0.15); color: #b91c1c; }
+  .tag-guide { background: rgba(245, 158, 11, 0.2); color: #b45309; }
+  .tag-feature { background: rgba(5, 150, 105, 0.15); color: #047857; }
+
+  .card ul { padding-left:14px; }
+  .card li { margin-bottom:3px; }
+
+  /* 阶段箭头 */
+  .stage-arrow {
+    display:flex; align-items:center; justify-content:center;
+    height:36px; position:relative;
+  }
+  .stage-arrow::before {
+    content:''; position:absolute; left:50%; transform:translateX(-50%);
+    top:0; bottom:0; width:2px;
+    background:linear-gradient(to bottom, transparent, var(--border-bright), transparent);
+  }
+  .arrow-badge {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius:20px; padding:3px 12px; font-size:10px;
+    color:var(--text-muted); font-family:'JetBrains Mono', monospace;
+    position:relative; z-index:1; letter-spacing:0.06em;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  }
+
+  /* 主题色 */
+  .phase-1 .stage-header::before { background:var(--c1); }
+  .phase-1 .stage-num { background: rgba(27, 140, 255, 0.12); color: var(--c1); }
+  .phase-1 .stage-title { color: var(--c1); }
+
+  .phase-2 .stage-header::before { background:var(--c2); }
+  .phase-2 .stage-num { background: rgba(124, 108, 240, 0.12); color:var(--c2); }
+  .phase-2 .stage-title { color:var(--c2); }
+
+  .phase-3 .stage-header::before { background:var(--c3); }
+  .phase-3 .stage-num { background: rgba(16, 185, 129, 0.12); color:var(--c3); }
+  .phase-3 .stage-title { color:var(--c3); }
+
+  .phase-4 .stage-header::before { background:var(--c4); }
+  .phase-4 .stage-num { background: rgba(249, 115, 22, 0.12); color:var(--c4); }
+  .phase-4 .stage-title { color:var(--c4); }
+
+  /* 弹窗 */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal.show { display: flex; }
+  .modal-content {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius:16px; max-width:480px; width:100%;
+    padding:30px; position:relative; animation:modalPop 0.3s;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+    margin: auto;
+  }
+  .modal-content.demo-content {
+    max-width: 400px;
+    width: min(400px, calc(100vw - 32px));
+    max-height: min(90vh, 680px);
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .demo-modal-toolbar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 12px 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+    z-index: 3;
+  }
+  .demo-modal-toolbar .modal-title {
+    margin-bottom: 4px;
+    font-size: 15px;
+    padding-right: 0;
+  }
+  .demo-modal-toolbar .modal-desc {
+    margin-bottom: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .demo-modal-body {
+    overflow-y: auto;
+    padding: 12px 14px 16px;
+    flex: 1;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .demo-content .demo-box {
+    margin: 0;
+    padding: 12px;
+    border-style: solid;
+  }
+  .modal-close {
+    position:absolute; top:16px; right:16px; width:28px; height:28px;
+    border-radius:50%; background: #f1f5f9; border:none; color:var(--text-secondary);
+    cursor:pointer; display:grid; place-items:center; font-size:16px;
+  }
+  .modal-close.modal-close-toolbar {
+    position: static;
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    flex-shrink: 0;
+    background: #e2e8f0;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+  }
+  .modal-close.modal-close-toolbar:hover {
+    background: #cbd5e1;
+  }
+  .modal-title { font-size:16px; font-weight:700; margin-bottom:20px; color:var(--text-primary); }
+  .modal-desc { font-size:13px; color:var(--text-secondary); margin-bottom:24px; line-height:1.7; }
+  .modal-btns { display:flex; gap:12px; justify-content:flex-end; }
+  .modal-btn { padding:8px 16px; border-radius:8px; font-size:12px; border:none; cursor:pointer; }
+  .btn-primary { background: var(--shareit-blue); color:#fff; }
+  .btn-secondary { background: #f1f5f9; color:var(--text-secondary); }
+
+  /* 功能演示面板 */
+  .demo-panel {
+    background:var(--bg3); border:1px solid var(--border);
+    border-radius:12px; padding:20px; margin-top:16px; display:none;
+  }
+  .demo-panel.show { display:block; }
+  .demo-title { font-size:12px; color:var(--guide); margin-bottom:10px; font-weight:500; }
+  .demo-box {
+    background: #f8fafc;
+    border: 1px dashed var(--border-bright);
+    border-radius:12px; padding:16px; text-align:center;
+  }
+  .demo-focus {
+    border: 1px solid rgba(27, 140, 255, 0.2);
+    background: rgba(27, 140, 255, 0.06);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .demo-focus-label {
+    font-size: 10px;
+    color: var(--shareit-blue);
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .demo-focus-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.35;
+  }
+  .demo-kpi {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #047857;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.28);
+    border-radius: 999px;
+    padding: 4px 10px;
+  }
+  .demo-action {
+    display:inline-block; margin-top:10px; padding:6px 14px;
+    background: var(--shareit-blue);
+    color: #fff;
+    border-radius:8px;
+    font-size:12px; font-weight:500; cursor:pointer; border:none;
+  }
+
+  /* SHAREit 风格手机框（参照浅色主站） */
+  .demo-content .phone-shell {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 8px;
+    padding: 8px;
+    border-radius: 28px;
+  }
+  .demo-content .phone-screen {
+    min-height: 380px;
+    border-radius: 22px;
+  }
+  .phone-shell {
+    width: min(100%, 390px);
+    margin: 0 auto 10px;
+    background: linear-gradient(180deg, #f4f4f7 0%, #e8e8ed 100%);
+    border: 1px solid #d4d6dd;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.9),
+      0 12px 40px rgba(15, 23, 42, 0.12);
+  }
+  .phone-screen {
+    min-height: 500px;
+    border-radius: 26px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 0;
+    text-align: left;
+    color: #0f172a;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .phone-shareit-chrome {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    background: #ffffff;
+  }
+  .phone-status-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+  }
+  .phone-time { font-variant-numeric: tabular-nums; }
+  .phone-dynamic-island {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92px;
+    height: 28px;
+    background: #0f172a;
+    border-radius: 20px;
+    margin-top: 2px;
+  }
+  .phone-signal-row {
+    font-size: 10px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .phone-signal-icons { letter-spacing: -2px; color: #0f172a; font-size: 9px; }
+  .phone-battery { font-variant-numeric: tabular-nums; }
+
+  .phone-shareit-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 16px 12px;
+  }
+  .phone-brand-shareit {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+  }
+  .phone-brand-suffix {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--shareit-blue);
+    letter-spacing: -0.02em;
+  }
+  .phone-brand-shareit .brand-share { color: #0f172a; }
+  .phone-brand-shareit .brand-it {
+    color: #94a3b8;
+    font-weight: 700;
+  }
+  .phone-brand-shareit .brand-i {
+    position: relative;
+  }
+  .phone-brand-shareit .brand-i-dot {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: #ef4444;
+    border-radius: 50%;
+    top: -2px;
+    right: -2px;
+  }
+  .phone-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .phone-crown { font-size: 16px; line-height: 1; opacity: 0.9; }
+  .phone-plus-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #0f172a;
+    font-size: 18px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: default;
+    padding: 0;
+    font-weight: 300;
+  }
+
+  .phone-music-tagline {
+    font-size: 11px;
+    color: #64748b;
+    margin: -4px 16px 8px;
+    font-weight: 500;
+  }
+  .phone-search-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 14px 10px;
+    padding: 10px 12px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #64748b;
+  }
+  .phone-search-ic { font-size: 14px; opacity: 0.85; }
+  .phone-search-placeholder {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .phone-music-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 0 10px 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .phone-mtab {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 8px 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    cursor: default;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .phone-mtab-active {
+    color: var(--shareit-blue);
+    background: rgba(27, 140, 255, 0.1);
+  }
+  .phone-music-shortcuts {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 10px 12px 8px;
+  }
+  .phone-ms-item {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .phone-ms-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--shareit-blue);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    box-shadow: 0 4px 14px rgba(27, 140, 255, 0.3);
+  }
+  .phone-ms-item span {
+    font-size: 10px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1.2;
+  }
+
+  .phone-body-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 6px 14px 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .phone-tabbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0));
+    border-top: 1px solid #eef0f4;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .phone-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #64748b;
+    min-width: 52px;
+  }
+  .phone-tab-active {
+    color: var(--shareit-blue);
+  }
+  .phone-tab-ic {
+    font-size: 18px;
+    line-height: 1;
+    opacity: 0.85;
+  }
+  .phone-tab-active .phone-tab-ic { opacity: 1; }
+
+  .phone-card {
+    border: 1px solid #eef0f4;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #334155;
+  }
+  .phone-cta {
+    border: none;
+    border-radius: 12px;
+    background: var(--shareit-blue);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px;
+    width: 100%;
+    margin-bottom: 10px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(27, 140, 255, 0.28);
+  }
+  .phone-cta:active { background: var(--shareit-blue-press); }
+  .phone-emphasis {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--shareit-blue);
+    margin-top: 4px;
+    text-align: center;
+  }
+  .phone-card strong { color: #0369a1; }
+  .phone-checklist {
+    border: 1px solid #eef0f4;
+    border-radius: 12px;
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .phone-checkitem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+  .phone-checkitem:last-child { margin-bottom: 0; }
+  .phone-checkdot {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    background: rgba(16, 185, 129, 0.12);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    color: #059669;
+    flex-shrink: 0;
+  }
+  .phone-checkitem.off .phone-checkdot {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+    color: #94a3b8;
+  }
+  .phone-ghost-btn {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #475569;
+    font-size: 12px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .audio-wave {
+    border: 1px solid #eef0f4;
+    border-radius: 12px;
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .audio-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 68px;
+  }
+  .audio-bars span {
+    width: 6px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #6aa2ff, #4f7de0);
+  }
+  .audio-bars span.noise {
+    background: linear-gradient(180deg, #ff8a8a, #ff4d4d);
+    box-shadow: 0 0 0 1px rgba(255,107,107,0.25);
+  }
+  .audio-bars span.fixed {
+    background: linear-gradient(180deg, #86f1c6, #34d399);
+    box-shadow: 0 0 0 1px rgba(52,211,153,0.3);
+  }
+  .audio-legend {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    color: #64748b;
+  }
+  .phone-player {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #eef0f4;
+    border-radius: 14px;
+    background: #fff;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .phone-cover {
+    width: 76px;
+    height: 76px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+    background: #f1f5f9;
+  }
+  .phone-cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .phone-track {
+    flex: 1;
+    min-width: 0;
+  }
+  .phone-track-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .phone-track-sub {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .phone-minirow {
+    display:flex;
+    gap:8px;
+    margin-top: 10px;
+  }
+  .phone-chip {
+    font-size: 11px;
+    color: #047857;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 999px;
+    padding: 4px 8px;
+  }
+  .lyrics-box {
+    border: 1px solid #eef0f4;
+    border-radius: 14px;
+    background: #f8fafc;
+    padding: 12px;
+    max-height: 210px;
+    overflow: auto;
+    margin-bottom: 10px;
+  }
+  .lyric-line {
+    font-size: 13px;
+    line-height: 1.55;
+    padding: 4px 6px;
+    border-radius: 8px;
+    color: #64748b;
+    transition: 0.25s ease;
+  }
+  .lyric-line.active {
+    background: rgba(27, 140, 255, 0.12);
+    border: 1px solid rgba(27, 140, 255, 0.25);
+    color: #0f172a;
+  }
+  .skeleton-cover {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #e2e8f0, #f1f5f9, #e2e8f0);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .phone-progress {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .phone-progress > span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--shareit-blue), #38bdf8);
+    transition: width 0.5s ease;
+  }
+  .phone-tip {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 8px;
+    text-align: center;
+  }
+  #demoStatus {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #475569;
+    margin-top: 6px;
+  }
+
+  /* 总结 */
+  .summary-block {
+    margin-top:40px; padding:30px; background: #fff;
+    border:1px solid var(--border); border-radius:12px;
+    animation:fadeUp 0.7s 0.8s ease both; position:relative; overflow:hidden;
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06);
+  }
+  .summary-block::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5));
+  }
+  .summary-title { font-size:13px; font-weight:700; margin-bottom:20px; }
+  .summary-grid {
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px;
+  }
+  .summary-pill {
+    background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+    padding:14px; font-size:12px; transition:0.2s;
+  }
+  .summary-pill:hover { border-color:var(--border-bright); transform:translateY(-2px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06); }
+  .sp-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; opacity:0.7; }
+  .sp-value { font-weight:500; }
+
+  /* 动画 */
+  @keyframes fadeDown { from{opacity:0; transform:translateY(-16px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes fadeUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes modalPop { from{opacity:0; transform:scale(0.9);} to{opacity:1; transform:scale(1);} }
+
+  /* 响应式 */
+  @media (max-width:700px) {
+    .flow-grid { grid-template-columns:1fr 1fr; }
+    .flow-col { border-right:none; border-bottom:1px solid var(--border); }
+    .flow-col:nth-child(odd) { border-right:1px solid var(--border); }
+    .flow-col:last-child, .flow-col:nth-last-child(2):nth-child(odd) { border-bottom:none; }
+    .modal-content.demo-content {
+      width: calc(100vw - 24px);
+      max-width: 400px;
+      max-height: 85vh;
+    }
+    .demo-content .phone-screen { min-height: 340px; }
+  }
+  @media (max-width:440px) {
+    .flow-grid { grid-template-columns:1fr; }
+    .flow-col { border-right:none !important; }
+  }
+
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background: #e2e8f0; }
+  ::-webkit-scrollbar-thumb { background:#94a3b8; border-radius:3px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- 悬浮导航 -->
+  <div class="navbar">
+    <div class="nav-btn" onclick="scrollToStage('s1')">获取存储</div>
+    <div class="nav-btn" onclick="scrollToStage('s2')">日常播放</div>
+    <div class="nav-btn" onclick="scrollToStage('s3')">社交分享</div>
+    <div class="nav-btn" onclick="scrollToStage('s4')">换机留存</div>
+    <div class="nav-btn" onclick="toggleAll()">全部展开/折叠</div>
+  </div>
+
+  <!-- 头部 -->
+  <div class="header">
+    <div class="eyebrow">SHAREit Music App · Interactive Demo</div>
+    <h1>新音乐APP 全链路用户旅程<br>交互演示版</h1>
+    <div class="sub"><strong style="color:#0f172a;font-weight:900;">我们不是在做一个音乐APP，而是在接管第三世界的“离线音乐分发网络”。</strong></div>
+  </div>
+
+  <!-- 图例 -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#4facfe"></div> 用户行为路径</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div> 用户痛点</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fcd34d"></div> 可点·引流弹窗</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div> 可点·功能Demo</div>
+  </div>
+
+  <!-- Stage 1 -->
+  <div class="stage phase-1 open" id="s1">
+    <div class="stage-header" onclick="toggleStage('s1')">
+      <div class="stage-num">STAGE 01</div>
+      <div>
+        <div class="stage-title">音乐获取与存储期</div>
+        <div class="stage-subtitle">入口拦截与基建 · 用户生命周期起点</div>
+      </div>
+      <div class="stage-toggle">⌄</div>
+    </div>
+    <div class="stage-body">
+      <div class="flow-grid">
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🎵</span>用户行为</div>
+          <div class="card card-path">
+            <div class="card-tag tag-path">获取</div>
+            <ul>
+              <li>YouTube转MP3下载</li>
+              <li>Telegram群组传播</li>
+              <li>SHAREit好友互传</li>
+              <li>避开正版平台版权限制</li>
+            </ul>
+          </div>
+          <div class="card card-path">
+            <div class="card-tag tag-path">存储</div>
+            <ul>
+              <li>本地文件形式保存</li>
+              <li>无统一目录管理</li>
+              <li>多来源文件分散存放</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">⚡</span>核心痛点</div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">文件混乱</div>
+            命名不规范、乱码，查找极为不便
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">重复冗余</div>
+            重复存储严重，同一首歌多份副本
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">内存不足</div>
+            占用低端机宝贵存储，常报空间不足
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">💡</span>引流策略</div>
+          <div class="card card-guide" onclick="showModal('下载完成后，检测到大量分散音乐文件，是否一键整理并打开专属音乐APP？')">
+            <div class="card-tag tag-guide">触发场景</div>
+            下载完成后 / 打开SHAREit文件管理器时
+          </div>
+          <div class="card card-guide" onclick="showModal('音乐文件太分散占内存？一键智能整理，立即安装APP体验')">
+            <div class="card-tag tag-guide">痛点弹窗</div>
+            "音乐文件太分散占内存？一键智能整理！"
+          </div>
+          <div class="card card-guide" onclick="showModal('已为您自动扫描全部音乐，一键导入APP，无需手动操作')">
+            <div class="card-tag tag-guide">转化路径</div>
+            <ul>
+              <li>应用商店一键下载</li>
+              <li>SHAREit内直接下载</li>
+              <li>打开后自动扫描导入</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🌟</span>APP特色</div>
+          <div class="card card-feature" onclick="showDemo('AI智能整理演示：自动去重、修复乱码、统一命名、整理目录')">
+            <div class="card-tag tag-feature">智能整理</div>
+            AI一键批量去重、重命名，修复损坏文件，操作流畅不卡顿
+          </div>
+          <div class="card card-feature" onclick="showDemo('存储优化演示：无损压缩算法，音乐文件体积减少50%，不影响音质')">
+            <div class="card-tag tag-feature">存储优化</div>
+            一键音质无损压缩，存储占用直降 <strong>50%</strong>，专为低端机设计
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage-arrow"><div class="arrow-badge">↓ 用户开始日常听歌</div></div>
+
+  <!-- Stage 2 -->
+  <div class="stage phase-2 open" id="s2">
+    <div class="stage-header" onclick="toggleStage('s2')">
+      <div class="stage-num">STAGE 02</div>
+      <div>
+        <div class="stage-title">日常播放与体验期</div>
+        <div class="stage-subtitle">核心活跃与粘性 · 最高频使用场景</div>
+      </div>
+      <div class="stage-toggle">⌄</div>
+    </div>
+    <div class="stage-body">
+      <div class="flow-grid">
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🎵</span>用户行为</div>
+          <div class="card card-path" style="background:var(--c2-dim);border-color:rgba(124,108,240,0.35);color:#5b21b6">
+            <div class="card-tag" style="background:rgba(124,108,240,0.18);color:var(--c2)">高频使用</div>
+            <ul>
+              <li>使用系统自带播放器</li>
+              <li>使用功能简陋第三方APP</li>
+              <li>无歌词/封面情况下听歌</li>
+              <li>外放播放（公共场合）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">⚡</span>核心痛点</div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">体验残缺</div>
+            无歌词、无专辑封面，界面简陋无情感
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">音质劣化</div>
+            本地MP3来源混杂，有杂音、爆音
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">外放不佳</div>
+            安卓低端机系统音量小，公放效果差
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">搜索困难</div>
+            不会拼写本土小语种歌名，搜不到
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">💡</span>引流策略</div>
+          <div class="card card-guide" onclick="showModal('检测到您正在播放无歌词歌曲，是否打开APP自动补全？')">
+            <div class="card-tag tag-guide">触发场景</div>
+            用户播放某首歌曲超过15秒时检测触发
+          </div>
+          <div class="card card-guide" onclick="showModal('当前歌曲缺少歌词和封面，一键完美补全，立即跳转APP')">
+            <div class="card-tag tag-guide">痛点弹窗</div>
+            "当前歌曲缺少歌词和封面，一键完美补全→"
+          </div>
+          <div class="card card-guide" onclick="showModal('已自动跳转到APP，当前歌曲已加载完成，点击继续播放')">
+            <div class="card-tag tag-guide">无缝衔接</div>
+            <ul>
+              <li>拉起新APP</li>
+              <li>自动聚焦当前歌曲</li>
+              <li>续播不中断</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🌟</span>APP特色</div>
+          <div class="card card-feature" onclick="showDemo('AI自动匹配歌词+封面，支持小语种、模糊歌曲、本地文件')">
+            <div class="card-tag tag-feature">AI歌词/封面</div>
+            自动匹配本土音源，补全小语种歌词 & 高清专辑封面
+          </div>
+          <div class="card card-feature" onclick="showDemo('AI音质修复：去除杂音、爆音、底噪，增强清晰度')">
+            <div class="card-tag tag-feature">AI音质修复</div>
+            一键修复本地MP3杂音，适配低端机音频链路
+          </div>
+          <div class="card card-feature" onclick="showDemo('外放增强：突破系统音量限制，优化低音，防止破音')">
+            <div class="card-tag tag-feature">外放增强</div>
+            底层突破系统音量限制，优化低音防破音，公放神器
+          </div>
+          <div class="card card-feature" onclick="showDemo('AI搜歌：哼唱搜、语音搜、歌词片段搜、小语种搜')">
+            <div class="card-tag tag-feature">AI搜歌</div>
+            哼唱搜 / 本地语言语音搜 / 歌词片段搜
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage-arrow"><div class="arrow-badge">↓ 用户想分享好听的歌</div></div>
+
+  <!-- Stage 3 -->
+  <div class="stage phase-3 open" id="s3">
+    <div class="stage-header" onclick="toggleStage('s3')">
+      <div class="stage-num">STAGE 03</div>
+      <div>
+        <div class="stage-title">社交传播与分享期</div>
+        <div class="stage-subtitle">裂变拉新与破圈 · SHAREit核心流量场景</div>
+      </div>
+      <div class="stage-toggle">⌄</div>
+    </div>
+    <div class="stage-body">
+      <div class="flow-grid">
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🎵</span>用户行为</div>
+          <div class="card card-path" style="background:var(--c3-dim);border-color:rgba(16,185,129,0.35);color:#047857">
+            <div class="card-tag" style="background:rgba(16,185,129,0.18);color:var(--c3)">传播</div>
+            <ul>
+              <li>SHAREit 一对一传歌</li>
+              <li>SHAREit 群组批量传歌</li>
+              <li>口耳相传推荐歌曲</li>
+              <li>线下聚会集体听歌</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">⚡</span>核心痛点</div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">传后无沉淀</div>
+            传完即散，无法形成个人化歌单留存
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">难以复用</div>
+            想再找同一首歌或再次分享极不方便
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">无协同体验</div>
+            多人聚会时无法同步播放同一歌单
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">💡</span>引流策略</div>
+          <div class="card card-guide" onclick="showModal('传歌完成！分享APP给好友，双方均可领取7天VIP会员')">
+            <div class="card-tag tag-guide">触发场景</div>
+            SHAREit完成一次音乐互传后弹出
+          </div>
+          <div class="card card-guide" onclick="showModal('分享新音乐APP给好友，双方均领VIP！立即分享')">
+            <div class="card-tag tag-guide">裂变弹窗</div>
+            "分享新音乐APP给好友，双方均领VIP！"
+          </div>
+          <div class="card card-guide" onclick="showModal('邀请成功：好友获得VIP，你获得VIP时长+离线加速券')">
+            <div class="card-tag tag-guide">激励体系</div>
+            <ul>
+              <li>新用户：专享VIP + 离线券</li>
+              <li>邀请者：获赠VIP时长</li>
+              <li>专属邀请链接 / 社交平台分享</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🌟</span>APP特色</div>
+          <div class="card card-feature" onclick="showDemo('P2P无网同步：零流量、无蓝牙、近距离多设备同步歌单')">
+            <div class="card-tag tag-feature">P2P无网同步</div>
+            零流量一键同步离线歌单至多台安卓设备
+          </div>
+          <div class="card card-feature" onclick="showDemo('共享离线房：多人连接同一歌单，同步播放、暂停、切歌')">
+            <div class="card-tag tag-feature">共享离线房</div>
+            线下聚会开启共享房，多人同步播放同一歌单
+          </div>
+          <div class="card card-feature" onclick="showDemo('传输热榜：基于SHAREit真实传歌数据，热门歌曲一键直传')">
+            <div class="card-tag tag-feature">传输热榜</div>
+            基于SHAREit真实互传数据生成榜单，点击直传好友
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage-arrow"><div class="arrow-badge">↓ 用户更换新手机</div></div>
+
+  <!-- Stage 4 -->
+  <div class="stage phase-4 open" id="s4">
+    <div class="stage-header" onclick="toggleStage('s4')">
+      <div class="stage-num">STAGE 04</div>
+      <div>
+        <div class="stage-title">换机与生命周期留存</div>
+        <div class="stage-subtitle">长效留存防流失 · 沉淀数据的保护壁垒</div>
+      </div>
+      <div class="stage-toggle">⌄</div>
+    </div>
+    <div class="stage-body">
+      <div class="flow-grid">
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🎵</span>用户行为</div>
+          <div class="card card-path" style="background:var(--c4-dim);border-color:rgba(249,115,22,0.35);color:#9a3412">
+            <div class="card-tag" style="background:rgba(249,115,22,0.18);color:var(--c4)">换机</div>
+            <ul>
+              <li>购买新安卓手机</li>
+              <li>使用SHAREit进行换机克隆</li>
+              <li>迁移应用与数据</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">⚡</span>核心痛点</div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">音乐丢失</div>
+            本地MP3无云端备份，换机后全部丢失
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">重新获取</div>
+            重新下载耗费大量时间和流量成本
+          </div>
+          <div class="card card-pain">
+            <div class="card-tag tag-pain">记录消失</div>
+            播放历史、歌单、续听位置全部清零
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">💡</span>引流策略</div>
+          <div class="card card-guide" onclick="showModal('检测到换机操作，是否同步音乐、歌单、播放记录到新机？')">
+            <div class="card-tag tag-guide">触发场景</div>
+            SHAREit换机克隆连接建立时自动检测
+          </div>
+          <div class="card card-guide" onclick="showModal('勾选音乐数据一并迁移，听歌记录永不丢失，零流量完成')">
+            <div class="card-tag tag-guide">引导提示</div>
+            "勾选音乐数据一并迁移，听歌记录永不丢失"
+          </div>
+          <div class="card card-guide" onclick="showModal('新机已自动安装APP，全部音乐数据迁移完成，开机即可播放')">
+            <div class="card-tag tag-guide">一键方案</div>
+            <ul>
+              <li>自动在新机安装新APP</li>
+              <li>全量数据同步迁移</li>
+              <li>开机即可续播</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flow-col">
+          <div class="col-label"><span class="col-icon">🌟</span>APP特色</div>
+          <div class="card card-feature" onclick="showDemo('SHAREit换机深度打通：独家技术，音乐数据无缝迁移')">
+            <div class="card-tag tag-feature">换机无缝衔接</div>
+            与SHAREit克隆深度打通，独家技术壁垒
+          </div>
+          <div class="card card-feature" onclick="showDemo('全量迁移：歌曲+歌单+歌词封面+播放记录，零流量秒传')">
+            <div class="card-tag tag-feature">全量数据迁移</div>
+            歌单 + 续听记录 + 补全的歌词封面，一键零流量秒传
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 总结 -->
+  <div class="summary-block">
+    <div class="summary-title">▎ 核心差异化定位总结</div>
+    <div class="summary-grid">
+      <div class="summary-pill">
+        <div class="sp-label" style="color:#4facfe">战略定位</div>
+        <div class="sp-value">接管第三世界离线音乐分发网络<br>SHAREit生态专属入口型产品</div>
+      </div>
+      <div class="summary-pill">
+        <div class="sp-label" style="color:#a78bfa">AI赋能</div>
+        <div class="sp-value">哼唱搜歌 · 歌词补全<br>封面匹配 · 音质修复</div>
+      </div>
+      <div class="summary-pill">
+        <div class="sp-label" style="color:#34d399">独家壁垒</div>
+        <div class="sp-value">P2P无网同步<br>SHAREit克隆打通</div>
+      </div>
+      <div class="summary-pill">
+        <div class="sp-label" style="color:#fb923c">本土适配</div>
+        <div class="sp-value">低端机优化<br>小语种内容专区</div>
+      </div>
+      <div class="summary-pill">
+        <div class="sp-label" style="color:#f472b6">避开内卷</div>
+        <div class="sp-value">不打版权库之战<br>聚焦本地文件体验</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 弹窗：点击遮罩空白处可关闭 -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title">📢 引流弹窗演示</div>
+    <div class="modal-desc" id="modalText">提示内容</div>
+    <div class="modal-btns">
+      <button class="modal-btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="modal-btn btn-primary" onclick="closeModal()">立即体验</button>
+    </div>
+  </div>
+</div>
+
+<!-- 功能演示：点击遮罩空白处可关闭 -->
+<div class="modal" id="demoModal" onclick="if(event.target===this)closeDemo()">
+  <div class="modal-content demo-content" role="dialog" aria-modal="true" aria-labelledby="demoModalTitle" onclick="event.stopPropagation()">
+    <div class="demo-modal-toolbar">
+      <div>
+        <div class="modal-title" id="demoModalTitle">✨ 功能交互演示</div>
+        <div class="modal-desc" id="demoText">功能说明</div>
+      </div>
+      <button type="button" class="modal-close modal-close-toolbar" onclick="closeDemo()" aria-label="关闭演示">×</button>
+    </div>
+    <div class="demo-modal-body">
+      <div class="demo-box">
+        <div class="demo-focus">
+          <div class="demo-focus-label">CORE VALUE</div>
+          <div class="demo-focus-title" id="demoFocusTitle">核心卖点加载中...</div>
+          <div class="demo-kpi" id="demoKpi">等待演示启动</div>
+        </div>
+        <div class="phone-shell">
+          <div class="phone-screen" id="demoScreen"></div>
+        </div>
+        <div id="demoStatus">请直接点击手机里的按钮，开始对应交互演示</div>
+        <div class="phone-tip">模拟手机端动效，仅用于卖点展示 · 点击空白区域关闭</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 展开/折叠模块
+  function toggleStage(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+  }
+
+  // 全部展开/折叠
+  let allOpen = true;
+  function toggleAll() {
+    const stages = document.querySelectorAll('.stage');
+    allOpen = !allOpen;
+    stages.forEach(s => {
+      allOpen ? s.classList.add('open') : s.classList.remove('open');
+    });
+  }
+
+  // 滚动到指定阶段
+  function scrollToStage(id) {
+    document.getElementById(id).scrollIntoView({ behavior:'smooth' });
+  }
+
+  // 引流弹窗
+  function showModal(text) {
+    document.getElementById('modalText').innerText = text;
+    document.getElementById('modal').classList.add('show');
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('show');
+  }
+
+  // 功能演示弹窗
+  let activeDemoType = 'default';
+  let demoTimers = [];
+  let dedupeEnabled = true;
+
+  function clearDemoTimers() {
+    demoTimers.forEach(t => clearTimeout(t));
+    demoTimers = [];
+  }
+
+  function inferDemoType(text) {
+    if (text.includes('智能整理')) return 'smart-organize';
+    if (text.includes('存储优化')) return 'storage-opt';
+    if (text.includes('AI搜歌')) return 'ai-search';
+    if (text.includes('全量迁移') || text.includes('全量数据迁移')) return 'full-migration';
+    if (text.includes('音质修复')) return 'audio-fix';
+    if (text.includes('外放增强')) return 'speaker-boost';
+    if (text.includes('P2P无网同步')) return 'p2p-sync';
+    if (text.includes('共享离线房')) return 'group-room';
+    if (text.includes('传输热榜')) return 'hot-share';
+    if (text.includes('换机无缝衔接')) return 'device-switch';
+    if (text.includes('歌词') || text.includes('封面')) return 'lyrics-cover';
+    return 'default';
+  }
+
+  function phoneTabBar() {
+    return `
+      <div class="phone-tabbar" role="navigation" aria-label="主导航">
+        <div class="phone-tab"><span class="phone-tab-ic" aria-hidden="true">⌂</span><span>Home</span></div>
+        <div class="phone-tab"><span class="phone-tab-ic" aria-hidden="true">▣</span><span>Private</span></div>
+        <div class="phone-tab phone-tab-active"><span class="phone-tab-ic" aria-hidden="true">♪</span><span>Music</span></div>
+        <div class="phone-tab"><span class="phone-tab-ic" aria-hidden="true">◎</span><span>Contacts</span></div>
+        <div class="phone-tab"><span class="phone-tab-ic" aria-hidden="true">⬡</span><span>Me</span></div>
+      </div>
+    `;
+  }
+
+  function phoneChromeEnd() {
+    return `</div>${phoneTabBar()}</div>`;
+  }
+
+  function topBase() {
+    return `
+      <div class="phone-shareit-chrome">
+        <div class="phone-status-bar">
+          <span class="phone-time">9:41</span>
+          <span class="phone-dynamic-island" aria-hidden="true"></span>
+          <span class="phone-signal-row"><span class="phone-signal-icons" aria-hidden="true">●●●●</span> 5G <span class="phone-battery">78%</span></span>
+        </div>
+        <div class="phone-shareit-top">
+          <div class="phone-brand-shareit" translate="no"><span class="brand-share">SHARE</span><span class="brand-it"><span class="brand-i">i<span class="brand-i-dot"></span></span>t</span> <span class="phone-brand-suffix">Music</span></div>
+          <div class="phone-top-actions">
+            <span class="phone-crown" title="VIP">👑</span>
+            <button type="button" class="phone-plus-btn" aria-label="新建歌单">+</button>
+          </div>
+        </div>
+        <p class="phone-music-tagline">离线优先 · 本地曲库与互传编排</p>
+        <div class="phone-search-pill" role="search"><span class="phone-search-ic" aria-hidden="true">🔍</span><span class="phone-search-placeholder">搜歌、歌手、哼唱、歌词片段…</span></div>
+        <div class="phone-music-tabs" role="tablist">
+          <button type="button" class="phone-mtab phone-mtab-active" role="tab" aria-selected="true">曲库</button>
+          <button type="button" class="phone-mtab" role="tab" aria-selected="false">歌单</button>
+          <button type="button" class="phone-mtab" role="tab" aria-selected="false">发现</button>
+          <button type="button" class="phone-mtab" role="tab" aria-selected="false">我的</button>
+        </div>
+        <div class="phone-music-shortcuts">
+          <div class="phone-ms-item"><div class="phone-ms-icon" aria-hidden="true">♫</div><span>本地</span></div>
+          <div class="phone-ms-item"><div class="phone-ms-icon" aria-hidden="true">☰</div><span>歌单</span></div>
+          <div class="phone-ms-item"><div class="phone-ms-icon" aria-hidden="true">⇄</div><span>离线同步</span></div>
+          <div class="phone-ms-item"><div class="phone-ms-icon" aria-hidden="true">📶</div><span>传歌榜</span></div>
+        </div>
+        <div class="phone-body-scroll">
+    `;
+  }
+
+  function renderPhone(html) {
+    document.getElementById('demoScreen').innerHTML = topBase() + html + phoneChromeEnd();
+  }
+
+  function getDemoMeta(type) {
+    if (type === 'smart-organize') return { title: '一键让音乐库从混乱变有序', kpi: '去重+归档，管理效率显著提升' };
+    if (type === 'storage-opt') return { title: '低端机也能装下更多歌', kpi: '目标：节省约 50% 存储占用' };
+    if (type === 'lyrics-cover') return { title: '播放体验从“裸歌”变完整', kpi: '歌词/封面自动补齐，无缝续播' };
+    if (type === 'audio-fix') return { title: '老旧音源也能修到更清晰', kpi: '降噪去爆音，听感明显提升' };
+    if (type === 'speaker-boost') return { title: '外放音量和质感同时增强', kpi: '增强响度并抑制破音' };
+    if (type === 'ai-search') return { title: '不知道歌名也能秒搜到', kpi: '哼唱/语音/歌词片段，自动识别并定位' };
+    if (type === 'p2p-sync') return { title: '没有网络也能同步歌单', kpi: 'P2P 零流量，离线互传' };
+    if (type === 'group-room') return { title: '多人聚会可实时同播同控', kpi: '同步播放、暂停、切歌' };
+    if (type === 'hot-share') return { title: '把热门歌曲一键分享出去', kpi: '基于真实传歌数据驱动传播' };
+    if (type === 'device-switch') return { title: '换机后听歌体验不断档', kpi: '自动恢复应用与历史记录' };
+    if (type === 'full-migration') return { title: '换机不丢歌单不丢进度', kpi: '歌曲+歌单+歌词封面+播放进度，一次迁全' };
+    return { title: '点击开始查看核心卖点演示', kpi: '准备就绪' };
+  }
+
+  function coverDataUri(title, artist) {
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#4facfe"/>
+            <stop offset="0.55" stop-color="#a78bfa"/>
+            <stop offset="1" stop-color="#34d399"/>
+          </linearGradient>
+          <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncA type="table" tableValues="0 0.10" />
+            </feComponentTransfer>
+          </filter>
+        </defs>
+        <rect width="300" height="300" fill="url(#g)"/>
+        <rect width="300" height="300" filter="url(#grain)" opacity="0.35"/>
+        <circle cx="210" cy="90" r="56" fill="rgba(0,0,0,0.18)"/>
+        <circle cx="210" cy="90" r="26" fill="rgba(0,0,0,0.18)"/>
+        <text x="22" y="210" fill="rgba(255,255,255,0.92)" font-size="22" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-weight="800">${String(title).replace(/[<>&]/g,'')}</text>
+        <text x="22" y="240" fill="rgba(255,255,255,0.85)" font-size="16" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-weight="600">${String(artist).replace(/[<>&]/g,'')}</text>
+        <text x="22" y="272" fill="rgba(255,255,255,0.70)" font-size="12" font-family="system-ui, -apple-system, Segoe UI, sans-serif">AI Matched Cover</text>
+      </svg>
+    `.trim();
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  }
+
+  function lyricsLinesHtml(lines, activeIndex = -1) {
+    return lines
+      .map((t, i) => `<div class="lyric-line${i === activeIndex ? ' active' : ''}" data-ly="${i}">${t}</div>`)
+      .join('');
+  }
+
+  function getStartScreen(type) {
+    if (type === 'smart-organize') {
+      return `
+        <div class="phone-card">痛点：歌太多找不到、重复占空间、文件名乱码。</div>
+        <div class="phone-card">扫描到 <strong>128</strong> 首本地音频，疑似重复 <strong>36</strong> 首。</div>
+        <div class="phone-checklist">
+          <div class="phone-checkitem ${dedupeEnabled ? '' : 'off'}">
+            <div class="phone-checkdot">${dedupeEnabled ? '✓' : ''}</div>
+            <div>重复歌曲去重（可手动取消）</div>
+          </div>
+          <div class="phone-checkitem">
+            <div class="phone-checkdot">✓</div>
+            <div>修复乱码命名</div>
+          </div>
+          <div class="phone-checkitem">
+            <div class="phone-checkdot">✓</div>
+            <div>按歌手/专辑归档</div>
+          </div>
+        </div>
+        <button class="phone-ghost-btn js-toggle-dedupe">${dedupeEnabled ? '取消勾选“重复歌曲去重”' : '重新勾选“重复歌曲去重”'}</button>
+        <button class="phone-cta js-phone-start">开始 AI 一键整理</button>
+        <div class="phone-card">目标：${dedupeEnabled ? '去重 + ' : ''}修复乱码 + 自动归档，后续一搜就到。</div>
+      `;
+    }
+    if (type === 'storage-opt') {
+      return `
+        <div class="phone-card">痛点：手机空间不够，用着卡、还放不下更多歌。</div>
+        <div class="phone-card">当前音乐占用</div>
+        <div class="phone-emphasis">3.8 GB</div>
+        <button class="phone-cta js-phone-start">开启无损压缩</button>
+        <div class="phone-card">预计释放 <strong>1.9GB</strong>（约 50%），音质不降级。</div>
+      `;
+    }
+    if (type === 'lyrics-cover') {
+      return `
+        <div class="phone-card">痛点：本地歌“没歌词没封面”，体验像半成品。</div>
+        <div class="phone-player">
+          <div class="phone-cover"><div class="skeleton-cover" title="封面缺失"></div></div>
+          <div class="phone-track">
+            <div class="phone-track-title">Unknown Track</div>
+            <div class="phone-track-sub">Unknown Artist · 本地文件</div>
+            <div class="phone-minirow">
+              <div class="phone-chip">封面缺失</div>
+              <div class="phone-chip">歌词缺失</div>
+            </div>
+          </div>
+        </div>
+        <button class="phone-cta js-phone-start">一键补全歌词与封面</button>
+        <div class="phone-card">支持小语种 / 模糊文件名 / 多来源本地文件。</div>
+      `;
+    }
+    if (type === 'audio-fix') {
+      return `
+        <div class="phone-card">痛点：Telegram/互传来的 MP3 有杂音、爆音，听久很累。</div>
+        <div class="audio-wave">
+          <div class="audio-bars">
+            <span style="height:26px"></span><span style="height:34px"></span><span class="noise" style="height:58px"></span>
+            <span style="height:30px"></span><span style="height:46px"></span><span class="noise" style="height:60px"></span>
+            <span style="height:28px"></span><span style="height:38px"></span><span style="height:52px"></span>
+            <span class="noise" style="height:62px"></span><span style="height:36px"></span><span style="height:30px"></span>
+          </div>
+          <div class="audio-legend"><span>红色 = 噪点/爆音位</span><span>蓝色 = 正常波形</span></div>
+        </div>
+        <div class="phone-card">音质检测：底噪偏高、爆音点 <strong>3</strong> 处（红色已标出）</div>
+        <button class="phone-cta js-phone-start">开启 AI 音质修复</button>
+        <div class="phone-card">目标：降噪 + 修爆音 + 增清晰度，低端机也流畅。</div>
+      `;
+    }
+    if (type === 'speaker-boost') {
+      return `
+        <div class="phone-card">痛点：外放声音小、低音虚，开大就破音。</div>
+        <div class="phone-card">当前外放：系统音量 <strong>72%</strong></div>
+        <button class="phone-cta js-phone-start">开启外放增强</button>
+        <div class="phone-card">提升：响度 + 低音 + 防破音保护。</div>
+      `;
+    }
+    if (type === 'ai-search') {
+      return `
+        <div class="phone-card">痛点：不会拼写小语种歌名、文件名乱码，根本搜不到。</div>
+        <div class="phone-card">AI 搜歌：支持 <strong>哼唱</strong> / <strong>语音</strong> / <strong>歌词片段</strong></div>
+        <button class="phone-cta js-phone-start">按住说话：哼唱或说一句歌词</button>
+        <div class="phone-card">示例：说“副歌那句…”，或哼 5 秒即可识别。</div>
+      `;
+    }
+    if (type === 'p2p-sync') {
+      return `
+        <div class="phone-card">痛点：没网/流量紧张时，想把歌单同步到朋友手机很难。</div>
+        <div class="phone-card">附近设备：<strong>3</strong> 台可连接</div>
+        <button class="phone-cta js-phone-start">开始零流量同步歌单</button>
+        <div class="phone-card">P2P 离线传输：不耗流量、无需蓝牙。</div>
+      `;
+    }
+    if (type === 'group-room') {
+      return `
+        <div class="phone-card">痛点：聚会想同播同控，一人播大家听，切歌不同步。</div>
+        <div class="phone-card">离线房：<strong>Party-Room</strong></div>
+        <div class="phone-card">成员：<strong>4</strong> 人已加入</div>
+        <button class="phone-cta js-phone-start">开始同步播放</button>
+      `;
+    }
+    if (type === 'hot-share') {
+      return `
+        <div class="phone-card">痛点：想分享“最近大家都在传的歌”，但不知道传什么更有效。</div>
+        <div class="phone-card">传输热榜（基于 SHAREit 真实互传数据）</div>
+        <button class="phone-cta js-phone-start">一键直传 TOP1 给好友</button>
+        <div class="phone-card">把“可传播内容”变成“可操作入口”。</div>
+      `;
+    }
+    if (type === 'device-switch') {
+      return `
+        <div class="phone-card">痛点：换机后本地歌散落、播放历史清零，要重新整理。</div>
+        <div class="phone-card">检测到 SHAREit 换机连接</div>
+        <button class="phone-cta js-phone-start">一键恢复音乐体验</button>
+        <div class="phone-card">同步：应用 + 播放记录 + 最近播放。</div>
+      `;
+    }
+    if (type === 'full-migration') {
+      return `
+        <div class="phone-card">痛点：换机最怕“歌丢了/歌单没了/进度没了”。</div>
+        <div class="phone-card">迁移清单：</div>
+        <div class="phone-card"><strong>歌曲</strong> · <strong>歌单</strong> · <strong>歌词/封面</strong> · <strong>播放进度</strong> · <strong>收藏</strong></div>
+        <button class="phone-cta js-phone-start">开始全量迁移（0 流量）</button>
+        <div class="phone-card">方式：P2P 直连秒传，不走公网。</div>
+      `;
+    }
+    return `<div class="phone-card">点击开始运行演示，查看交互流程。</div>`;
+  }
+
+  function getRunFlow(type) {
+    // 每个卖点统一成「触发痛点 → 执行能力 → 交付结果」三段，确保一眼看懂
+    if (type === 'smart-organize') {
+      return [
+        {
+          kpi: '痛点触发：可先手动确认是否执行“去重”',
+          screen: () => getStartScreen('smart-organize')
+        },
+        {
+          kpi: dedupeEnabled ? '执行中：去重 + 命名修复 + 自动归档' : '执行中：已跳过去重，仅命名修复 + 归档',
+          screen: () => `
+            <div class="phone-card">${dedupeEnabled ? '已勾选去重，正在智能比对重复音频指纹...' : '你已取消勾选去重，本次不会删除重复歌曲。'}</div>
+            <div class="phone-card">
+              正在执行关键能力...
+              <div class="phone-progress"><span id="demoBar"></span></div>
+            </div>
+          `
+        },
+        {
+          kpi: dedupeEnabled ? '整理完成：重复文件减少，目录更清晰' : '整理完成：保留全部歌曲，目录已标准化',
+          screen: () => `
+            <div class="phone-card">${dedupeEnabled ? '已去重 36 首，乱码修复 18 首，归档 6 个目录。' : '已跳过去重；乱码修复 18 首，归档 6 个目录，全部歌曲已保留。'}</div>
+            <button class="phone-cta js-phone-start">重新演示</button>
+          `
+        }
+      ];
+    }
+    if (type === 'audio-fix') {
+      return [
+        {
+          kpi: '痛点触发：波形红点已标记噪点位',
+          screen: () => getStartScreen('audio-fix')
+        },
+        {
+          kpi: '修复中：针对红色点位做去噪/去爆音',
+          screen: () => `
+            <div class="audio-wave">
+              <div class="audio-bars">
+                <span style="height:26px"></span><span style="height:34px"></span><span class="noise" style="height:58px"></span>
+                <span style="height:30px"></span><span style="height:46px"></span><span class="noise" style="height:60px"></span>
+                <span style="height:28px"></span><span style="height:38px"></span><span style="height:52px"></span>
+                <span class="noise" style="height:62px"></span><span style="height:36px"></span><span style="height:30px"></span>
+              </div>
+              <div class="audio-legend"><span>红色 = 待修复点位</span><span>蓝色 = 正常片段</span></div>
+            </div>
+            <div class="phone-card">
+              AI 修复进行中...
+              <div class="phone-progress"><span id="demoBar"></span></div>
+            </div>
+          `
+        },
+        {
+          kpi: '修复完成：红点消失，噪点位已平滑',
+          screen: () => `
+            <div class="audio-wave">
+              <div class="audio-bars">
+                <span style="height:26px"></span><span style="height:34px"></span><span class="fixed" style="height:44px"></span>
+                <span style="height:30px"></span><span style="height:46px"></span><span class="fixed" style="height:43px"></span>
+                <span style="height:28px"></span><span style="height:38px"></span><span style="height:52px"></span>
+                <span class="fixed" style="height:45px"></span><span style="height:36px"></span><span style="height:30px"></span>
+              </div>
+              <div class="audio-legend"><span>绿色 = 已修复点位</span><span>蓝色 = 正常片段</span></div>
+            </div>
+            <div class="phone-card">试听结果：爆音刺点已弱化，底噪显著下降，听感更平滑。</div>
+            <button class="phone-cta js-phone-audio-preview">试听修复前后对比</button>
+          `
+        }
+      ];
+    }
+    if (type === 'lyrics-cover') {
+      const title = 'Desert Night';
+      const artist = 'Amina';
+      const cover = coverDataUri(title, artist);
+      const lines = [
+        'I walk alone under desert night',
+        'Stars are falling, shining bright',
+        'Hold my hand, don’t let me go',
+        'We can find our way back home',
+        '—',
+        'La la la… (小语种歌词也可匹配)',
+        '这段副歌，跟着唱也能搜到'
+      ];
+      return [
+        {
+          kpi: '痛点触发：没有歌词/封面，体验像“半成品播放器”',
+          screen: () => getStartScreen('lyrics-cover')
+        },
+        {
+          kpi: '匹配中：自动识别曲目并补全元数据',
+          screen: () => `
+            <div class="phone-player">
+              <div class="phone-cover"><div class="skeleton-cover" title="匹配中"></div></div>
+              <div class="phone-track">
+                <div class="phone-track-title">识别中…</div>
+                <div class="phone-track-sub">AI 正在匹配歌词与封面</div>
+                <div class="phone-minirow">
+                  <div class="phone-chip">本地文件</div>
+                  <div class="phone-chip">模糊匹配</div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-card">
+              正在执行关键能力...
+              <div class="phone-progress"><span id="demoBar"></span></div>
+            </div>
+            <div class="lyrics-box" aria-label="歌词预览">
+              ${lyricsLinesHtml(lines.map(()=>'…'), -1)}
+            </div>
+          `
+        },
+        {
+          kpi: '补全完成：封面出现 + 歌词逐行高亮（更像真播放器）',
+          screen: () => `
+            <div class="phone-player">
+              <div class="phone-cover"><img alt="专辑封面" src="${cover}"></div>
+              <div class="phone-track">
+                <div class="phone-track-title">${title}</div>
+                <div class="phone-track-sub">${artist} · 已补全封面/歌词</div>
+                <div class="phone-minirow">
+                  <div class="phone-chip">高清封面</div>
+                  <div class="phone-chip">滚动歌词</div>
+                </div>
+              </div>
+            </div>
+            <button class="phone-cta js-phone-lyrics-play">播放并滚动歌词</button>
+            <div class="lyrics-box" id="lyricsBox">
+              ${lyricsLinesHtml(lines, 0)}
+            </div>
+          `
+        }
+      ];
+    }
+    if (type === 'ai-search') {
+      return [
+        {
+          kpi: '痛点触发：不会拼写/文件名乱码也能搜',
+          screen: () => `
+            <div class="phone-card">搜索框：输入“？？？”（拼写不确定）</div>
+            <div class="phone-card">提示：可用语音/哼唱/歌词片段</div>
+            <button class="phone-cta">按住说话：唱/说 5 秒</button>
+          `
+        },
+        {
+          kpi: '识别中：提取旋律与歌词特征',
+          screen: () => `
+            <div class="phone-card">正在识别音频特征...</div>
+            <div class="phone-card">
+              匹配中...
+              <div class="phone-progress"><span id="demoBar"></span></div>
+            </div>
+            <div class="phone-card">支持：小语种、模糊发音、断句歌词</div>
+          `
+        },
+        {
+          kpi: '结果交付：一键定位并播放/收藏',
+          screen: () => `
+            <div class="phone-card"><strong>识别结果</strong></div>
+            <div class="phone-card">Top1：Sia - Unstoppable（相似度 92%）</div>
+            <button class="phone-cta">一键播放 · 加入歌单</button>
+            <div class="phone-card">你不需要会拼写，也能快速找到想听的歌。</div>
+          `
+        }
+      ];
+    }
+    if (type === 'full-migration') {
+      return [
+        {
+          kpi: '痛点触发：换机后不想从零开始',
+          screen: () => `
+            <div class="phone-card">检测到新机连接成功</div>
+            <div class="phone-card">选择：全量迁移（推荐）</div>
+            <button class="phone-cta">开始迁移（0 流量）</button>
+            <div class="phone-card">包含：歌曲/歌单/歌词封面/播放进度/收藏</div>
+          `
+        },
+        {
+          kpi: '迁移中：边传边校验，防丢失',
+          screen: () => `
+            <div class="phone-card">正在迁移到新机...</div>
+            <div class="phone-card">
+              传输 + 校验
+              <div class="phone-progress"><span id="demoBar"></span></div>
+            </div>
+            <div class="phone-card">断点续传：中途断开也可继续。</div>
+          `
+        },
+        {
+          kpi: '迁移完成：开机即可续听原位置',
+          screen: () => `
+            <div class="phone-card"><strong>迁移完成</strong></div>
+            <div class="phone-card">歌曲 2,148 · 歌单 26 · 歌词封面已补齐</div>
+            <div class="phone-card">已恢复：上次播放《Track A》 01:23</div>
+            <button class="phone-cta">继续播放（不断档）</button>
+          `
+        }
+      ];
+    }
+
+    // 其他卖点走通用流程（仍展示开始页 + 进度 + 结果），保持原逻辑但更贴近“痛点→收益”
+    return [
+      {
+        kpi: '痛点触发：定位问题并一键解决',
+        screen: () => getStartScreen(type)
+      },
+      {
+        kpi: '执行中：关键能力正在生效',
+        screen: () => getStartScreen(type) + `
+          <div class="phone-card">
+            正在执行关键能力...
+            <div class="phone-progress"><span id="demoBar"></span></div>
+          </div>
+        `
+      },
+      {
+        kpi: '结果交付：立刻看到变化',
+        screen: () => getStartScreen(type) + `
+          <div class="phone-card">${getResultText(type)}</div>
+        `
+      }
+    ];
+  }
+
+  function getResultText(type) {
+    let result = '✅ 演示完成：卖点能力已生效，可继续下一步。';
+    if (type === 'smart-organize') result = dedupeEnabled
+      ? '✅ 已完成：去重 36 首、修复乱码 18 首、自动归档 6 个目录；之后按歌手/专辑一找就到。'
+      : '✅ 已完成：已按你的选择跳过去重；完成命名修复与自动归档，歌曲全量保留。';
+    if (type === 'storage-opt') result = '✅ 已完成：无损压缩后节省 49% 空间；手机更轻松，能装下更多歌。';
+    if (type === 'lyrics-cover') result = '✅ 已完成：歌词+封面已补全；可滚动歌词并高亮当前行，体验更像正版播放器。';
+    if (type === 'audio-fix') result = '✅ 已完成：底噪降低、爆音修复；通勤/外放更耐听。';
+    if (type === 'speaker-boost') result = '✅ 已完成：外放增强开启；更响、更稳，开大也不破音。';
+    if (type === 'ai-search') result = '✅ 已完成：无需会拼写，也能识别并定位到目标歌曲。';
+    if (type === 'p2p-sync') result = '✅ 已完成：歌单已同步到 2 台设备；零流量、离线完成。';
+    if (type === 'group-room') result = '✅ 已完成：房间内多人同步播放；暂停/切歌实时生效。';
+    if (type === 'hot-share') result = '✅ 已完成：热榜歌曲已直传好友；分享链路打通，传播更顺。';
+    if (type === 'device-switch') result = '✅ 已完成：新机已自动拉起 App 并恢复最近播放/历史记录。';
+    if (type === 'full-migration') result = '✅ 已完成：歌曲+歌单+进度全量迁移；开机即可续听，不从零开始。';
+    return result;
+  }
+
+  function showDemo(text) {
+    clearDemoTimers();
+    activeDemoType = inferDemoType(text);
+    const meta = getDemoMeta(activeDemoType);
+    document.getElementById('demoText').innerText = text;
+    document.getElementById('demoFocusTitle').innerText = meta.title;
+    document.getElementById('demoKpi').innerText = meta.kpi;
+    document.getElementById('demoStatus').innerText = '演示已就绪：请点击手机内按钮开始动画';
+    renderPhone(getStartScreen(activeDemoType));
+    document.getElementById('demoModal').classList.add('show');
+  }
+  function closeDemo() {
+    clearDemoTimers();
+    document.getElementById('demoModal').classList.remove('show');
+  }
+
+  // 演示动画
+  function runDemo() {
+    const status = document.getElementById('demoStatus');
+    clearDemoTimers();
+    status.innerText = '正在演示手机端操作...';
+    const flow = getRunFlow(activeDemoType);
+
+    // step 1
+    document.getElementById('demoKpi').innerText = flow[0].kpi;
+    renderPhone(flow[0].screen());
+
+    // step 2
+    demoTimers.push(setTimeout(() => {
+      document.getElementById('demoKpi').innerText = flow[1].kpi;
+      renderPhone(flow[1].screen());
+      const bar = document.getElementById('demoBar');
+      if (bar) bar.style.width = '48%';
+    }, 450));
+
+    // step 2 progress
+    demoTimers.push(setTimeout(() => {
+      const bar = document.getElementById('demoBar');
+      if (bar) bar.style.width = '88%';
+    }, 950));
+
+    // step 3
+    demoTimers.push(setTimeout(() => {
+      document.getElementById('demoKpi').innerText = flow[2].kpi;
+      renderPhone(flow[2].screen());
+      const finalText = getResultText(activeDemoType);
+      status.innerText = finalText;
+      document.getElementById('demoKpi').innerText = finalText.replace('✅ 已完成：', '').replace('✅ 演示完成：', '');
+    }, 1500));
+  }
+
+  // 直接点击手机 UI 按钮触发演示
+  document.getElementById('demoScreen').addEventListener('click', (event) => {
+    if (event.target.closest('.js-phone-start')) {
+      runDemo();
+    }
+    if (event.target.closest('.js-toggle-dedupe')) {
+      dedupeEnabled = !dedupeEnabled;
+      if (activeDemoType === 'smart-organize') {
+        renderPhone(getStartScreen('smart-organize'));
+        document.getElementById('demoStatus').innerText = dedupeEnabled
+          ? '已勾选去重：将去重 + 修复 + 归档'
+          : '已取消去重：仅修复命名与归档，重复歌曲会保留';
+      }
+    }
+    if (event.target.closest('.js-phone-audio-preview')) {
+      document.getElementById('demoStatus').innerText = '试听对比：修复后刺耳噪点减少，细节更清晰。';
+      document.getElementById('demoKpi').innerText = '前后对比：噪点位已修复，整体波形更平滑';
+    }
+    if (event.target.closest('.js-phone-lyrics-play')) {
+      clearDemoTimers();
+      const box = document.getElementById('lyricsBox');
+      if (!box) return;
+      const lines = Array.from(box.querySelectorAll('.lyric-line'));
+      let idx = 0;
+      lines.forEach(l => l.classList.remove('active'));
+      const tick = () => {
+        lines.forEach(l => l.classList.remove('active'));
+        const el = lines[idx];
+        if (el) {
+          el.classList.add('active');
+          el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        idx += 1;
+        if (idx < lines.length) {
+          demoTimers.push(setTimeout(tick, 520));
+        }
+      };
+      tick();
+    }
+  });
+</script>
+</body>
+</html>
