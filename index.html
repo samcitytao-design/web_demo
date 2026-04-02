@@ -1,0 +1,2540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>一城玩透 | 城市游玩一键通</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <style>
+    :root {
+      --primary: #409eff;
+      --accent: #ff7d40;
+      --bg: #ffffff;
+      --bg-card: #f5f7fa;
+      --text: #333333;
+      --text-muted: #666;
+      --border: #e4e7ed;
+      --shadow: 0 8px 24px rgba(64, 158, 255, 0.12);
+      --radius: 12px;
+      --font: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Nav */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+
+    .brand:hover {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-links button {
+      background: none;
+      border: none;
+      font: inherit;
+      color: var(--text);
+      cursor: pointer;
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .nav-links button:hover,
+    .nav-links button.active-nav {
+      background: var(--bg-card);
+      color: var(--primary);
+    }
+
+    /* Home hero */
+    .hero {
+      position: relative;
+      min-height: 52vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.25rem 3rem;
+      background: linear-gradient(135deg, rgba(64, 158, 255, 0.15) 0%, rgba(255, 125, 64, 0.12) 100%),
+        url("https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80") center/cover no-repeat;
+      color: #fff;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45));
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    .hero .slogan {
+      font-size: 0.95rem;
+      opacity: 0.95;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 520px;
+      margin: 0 auto 1rem;
+    }
+
+    .search-wrap input {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.85rem 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      outline: none;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text);
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      padding: 0.85rem 1.35rem;
+      border: none;
+      border-radius: var(--radius);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-accent:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    .suggest-list {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 100%;
+      margin-top: 4px;
+      width: min(100%, 400px);
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      z-index: 20;
+      text-align: left;
+    }
+
+    .suggest-list.show {
+      display: block;
+    }
+
+    .suggest-list button {
+      display: block;
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .suggest-list button:hover {
+      background: var(--bg-card);
+    }
+
+    .search-box-relative {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .hot-cities {
+      margin-top: 1.25rem;
+    }
+
+    .hot-cities span {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.9;
+    }
+
+    .hot-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .chip {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.03);
+    }
+
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .highlights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .hl-card {
+      background: var(--bg-card);
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .hl-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .hl-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .hl-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+
+    /* City list */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .filter-bar button {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .filter-bar button.is-on {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .city-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .city-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+
+    .city-card img {
+      height: 140px;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .city-card-body {
+      padding: 1rem;
+    }
+
+    .city-card-body h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .city-card-body .tagline {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    /* City overview */
+    .city-hero {
+      position: relative;
+      min-height: 320px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      padding: 2rem 1.25rem;
+      color: #fff;
+    }
+
+    .city-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent 55%);
+    }
+
+    .city-hero-text {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .city-hero-text h1 {
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      margin-bottom: 0.35rem;
+    }
+
+    .city-hero-text .sub {
+      font-size: 1rem;
+      opacity: 0.95;
+      margin-bottom: 0.5rem;
+    }
+
+    .city-hero-text .soul {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      max-width: 640px;
+      opacity: 0.92;
+    }
+
+    .module {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .module:last-of-type {
+      border-bottom: none;
+    }
+
+    .module h2 {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.75rem 0;
+    }
+
+    .tag-pill {
+      background: rgba(64, 158, 255, 0.12);
+      color: var(--primary);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .info-box {
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .info-box strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .route-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .route-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .route-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem;
+      cursor: pointer;
+      background: var(--bg-card);
+      transition: background 0.2s;
+    }
+
+    .route-head:hover {
+      background: #eef2f7;
+    }
+
+    .route-head img {
+      width: 100px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .route-meta {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .route-meta h3 {
+      font-size: 1.05rem;
+      color: var(--text);
+    }
+
+    .route-meta .meta-line {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .route-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .route-actions .btn {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+    }
+
+    .route-body {
+      display: none;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .route-item.expanded .route-body {
+      display: block;
+    }
+
+    .timeline {
+      border-left: 3px solid var(--primary);
+      padding-left: 1rem;
+      margin: 0.75rem 0;
+    }
+
+    .timeline li {
+      list-style: none;
+      margin-bottom: 0.75rem;
+      font-size: 0.92rem;
+    }
+
+    .timeline strong {
+      color: var(--accent);
+    }
+
+    /* Map: 高德容器 + SVG 备用 */
+    .map-stage {
+      position: relative;
+      height: 340px;
+      background: linear-gradient(160deg, #d4e8ff 0%, #e8f4e8 45%, #fff5e6 100%);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .map-amap {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+    }
+
+    .map-fallback-hint {
+      position: absolute;
+      left: 0.5rem;
+      bottom: 0.5rem;
+      z-index: 5;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .xhs-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 0.5rem 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .xhs-stat {
+      background: rgba(255, 125, 64, 0.12);
+      color: var(--accent);
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+    }
+
+    .xhs-feedback {
+      margin-top: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      background: #fafafa;
+      border-radius: 8px;
+      border-left: 3px solid var(--primary);
+      font-size: 0.85rem;
+      color: #444;
+    }
+
+    .xhs-feedback strong {
+      color: var(--accent);
+      font-size: 0.78rem;
+    }
+
+    .xhs-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+    }
+
+    .map-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .map-marker {
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .map-marker:hover {
+      transform: scale(1.15);
+    }
+
+    .map-legend {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 1rem;
+    }
+
+    .popup.show {
+      display: flex;
+    }
+
+    .popup-box {
+      background: #fff;
+      border-radius: var(--radius);
+      max-width: 400px;
+      width: 100%;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .popup-box h4 {
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      border: none;
+      background: var(--bg-card);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+
+    .tabs button {
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+      font-size: 0.88rem;
+    }
+
+    .tabs button.active {
+      border-color: var(--accent);
+      background: rgba(255, 125, 64, 0.1);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .media-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+      transition: box-shadow 0.2s;
+    }
+
+    .media-card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .media-card img {
+      height: 140px;
+      width: 100%;
+      object-fit: cover;
+      cursor: zoom-in;
+    }
+
+    .media-card .body {
+      padding: 0.85rem;
+      font-size: 0.9rem;
+    }
+
+    .media-card .body h4 {
+      font-size: 1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .xiaohongshu-card {
+      border-left: 4px solid var(--accent);
+    }
+
+    .tip-list {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .tip-item {
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .tip-item h4 {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      z-index: 300;
+      opacity: 0;
+      transition: transform 0.25s, opacity 0.25s;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .route-detail-header {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 0;
+    }
+
+    .route-detail-header h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .breadcrumb button {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .img-lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 250;
+      padding: 1rem;
+    }
+
+    .img-lightbox.show {
+      display: flex;
+    }
+
+    .img-lightbox img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 8px;
+    }
+
+    .img-lightbox .lb-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #fff;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .route-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .route-head img {
+        width: 100%;
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <button type="button" class="brand" id="navHome">一城玩透</button>
+    <div class="nav-links">
+      <button type="button" data-page="home" class="active-nav">首页</button>
+      <button type="button" data-page="cities">城市列表</button>
+      <button type="button" data-page="city" id="navDemoCity">城市总览</button>
+    </div>
+  </nav>
+
+  <!-- 首页 -->
+  <main id="page-home" class="page active">
+    <header class="hero">
+      <div class="hero-inner">
+        <h1>城市游玩一键通 · 不做攻略，直接出发</h1>
+        <p class="slogan">一键解锁城市最火路线，景点、美食、文化一次看懂</p>
+        <div class="search-wrap">
+          <div class="search-box-relative">
+            <input type="text" id="citySearch" placeholder="搜索城市（支持拼音 / 汉字，如 xi'an、西安）" autocomplete="off" />
+            <div class="suggest-list" id="suggestList" aria-live="polite"></div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btnLocate">定位当前</button>
+        </div>
+        <div class="hot-cities">
+          <span>热门城市 · 一键直达</span>
+          <div class="hot-tags" id="hotCities"></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2 class="section-title">为什么选择一城玩透</h2>
+      <div class="highlights">
+        <div class="hl-card">
+          <h3>🔥 最火路线不绕路</h3>
+          <p>按热度整理 1～3 日懒人顶配线，顺序、距离一目了然。</p>
+        </div>
+        <div class="hl-card">
+          <h3>📸 景点美食全包含</h3>
+          <p>必去打卡、本地吃法、地图联动，路上不再临时搜。</p>
+        </div>
+        <div class="hl-card">
+          <h3>📕 小红书经验 + 城市文化</h3>
+          <p>真实笔记提炼 + 极简文化导读，既好拍也更懂这座城。</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p><strong>一城玩透</strong> · 城市游玩一键通 Demo</p>
+      <p>联系：hello@example.com（示例）· 内容仅供演示 · 小红书跳转需授权后上线</p>
+    </footer>
+  </main>
+
+  <!-- 城市列表 -->
+  <main id="page-cities" class="page">
+    <div class="section">
+      <h2 class="section-title">按地区找城市</h2>
+      <div class="filter-bar" id="regionFilters"></div>
+      <div class="filter-bar" id="typeFilters">
+        <button type="button" data-type="all" class="is-on">全部</button>
+        <button type="button" data-type="hot">热门</button>
+        <button type="button" data-type="new">新晋</button>
+        <button type="button" data-type="niche">小众</button>
+      </div>
+      <div class="city-grid" id="cityGrid"></div>
+    </div>
+    <footer class="site-footer">
+      <p>一城玩透 · 城市列表</p>
+    </footer>
+  </main>
+
+  <!-- 城市总览（多城市共用） -->
+  <main id="page-city" class="page">
+    <div class="city-hero" id="cityHeroBg">
+      <div class="city-hero-text">
+        <h1 id="cityNameH">西安</h1>
+        <p class="sub" id="cityTagline">十三朝古都</p>
+        <p class="soul" id="citySoulOne">厚重历史与市井烟火交织的千年之城——城墙根下是生活，夜色里是大唐。</p>
+      </div>
+    </div>
+
+    <section class="module" id="mod-overview">
+      <h2>📌 城市速览（10 秒看懂）</h2>
+      <div class="info-grid">
+        <div class="info-box">
+          <strong>建议游玩</strong>
+          <span id="ovDays">2～3 天（示范数据）</span>
+        </div>
+        <div class="info-box">
+          <strong>最佳季节</strong>
+          <span id="ovSeason">3～5 月、9～11 月</span>
+        </div>
+        <div class="info-box">
+          <strong>城市气质</strong>
+          <div class="tags-row" id="ovTags"></div>
+        </div>
+      </div>
+      <p id="ovDesc" style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);"></p>
+    </section>
+
+    <section class="module" id="mod-routes">
+      <h2>🔥 路线查询（核心）</h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">按热门程度排序 · 点击展开详情 · 可跳转深度页</p>
+      <div class="route-list" id="routeList"></div>
+    </section>
+
+    <section class="module" id="mod-map">
+      <h2>🗺️ 路线地图（高德真实地图）</h2>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        下图接入高德地图 JS API：可缩放拖拽；标记为当前城市示范点位。若脚本被拦截或未配置白名单，将自动切换为示意 SVG。
+      </p>
+      <div class="map-stage" id="mapStage">
+        <div id="amapMain" class="map-amap" role="application" aria-label="高德地图"></div>
+      </div>
+      <p class="map-legend">蓝点：景点 · 橙点：美食 · 蓝线为路线示意 · 数据为演示，坐标近似景点中心</p>
+    </section>
+
+    <section class="module" id="mod-attractions">
+      <h2>📸 景点大全</h2>
+      <div class="tabs" id="attrTabs"></div>
+      <div class="card-grid" id="attrGrid"></div>
+    </section>
+
+    <section class="module" id="mod-food">
+      <h2>🍜 美食地图</h2>
+      <div class="tabs" id="foodTabs"></div>
+      <div class="card-grid" id="foodGrid"></div>
+    </section>
+
+    <section class="module" id="mod-xhs">
+      <h2>💬 小红书 · 用户反馈与分享</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        以下为「笔记风格摘要 + 模拟互动数据 + 精选留言」；跳转小红书使用搜索深链（无需爬虫）。正式商用展示原文、头像、外链需平台授权与合规审核。
+      </p>
+      <div class="tabs" id="xhsTabs"></div>
+      <div class="card-grid" id="xhsGrid"></div>
+    </section>
+
+    <section class="module" id="mod-culture">
+      <h2>📖 城市文化历史</h2>
+      <div class="info-grid" style="align-items: start" id="cultureWrap"></div>
+    </section>
+
+    <section class="module" id="mod-tips">
+      <h2>✈️ 旅行实用贴士</h2>
+      <div class="tip-list" id="tipsList"></div>
+    </section>
+
+    <footer class="site-footer">
+      <p><span id="cityFooterLbl">一城玩透</span> · <button type="button" class="btn btn-outline" id="backFromCity" style="margin-top: 0.5rem">返回首页</button></p>
+    </footer>
+  </main>
+
+  <!-- 路线详情页 -->
+  <main id="page-route-detail" class="page">
+    <div class="route-detail-header">
+      <p class="breadcrumb">
+        <button type="button" id="bcHome">首页</button>
+        · <button type="button" id="bcCity">城市总览</button>
+        · 路线详情
+      </p>
+      <h1 id="rdTitle">西安经典一日游</h1>
+      <p id="rdSub" style="color: var(--text-muted); margin-top: 0.35rem;">适合首次到访 · 历史 + 夜景 + 美食</p>
+      <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <button type="button" class="btn btn-primary" id="rdCopy">复制时间表</button>
+        <button type="button" class="btn btn-accent" id="rdShare">生成分享链接</button>
+        <button type="button" class="btn btn-outline" id="rdSync">一键同步至 APP（演示）</button>
+      </div>
+    </div>
+
+    <section class="module">
+      <h2>🗺️ 地图与轨迹（高德）</h2>
+      <div class="map-stage" id="detailMapWrap">
+        <div id="amapDetail" class="map-amap" role="application" aria-label="路线地图"></div>
+      </div>
+    </section>
+
+    <section class="module">
+      <h2>🚶 交通方案（示意）</h2>
+      <div class="info-grid" id="rdTransport"></div>
+    </section>
+
+    <section class="module">
+      <h2>⏰ 精准时间表（可复制）</h2>
+      <ul class="timeline" id="rdTimeline"></ul>
+    </section>
+
+    <section class="module">
+      <h2>📍 景点与美食补充</h2>
+      <div class="card-grid" id="rdCards"></div>
+    </section>
+
+    <section class="module">
+      <h2>⚠️ 避坑（联动经验贴）</h2>
+      <p id="rdPitfall" style="font-size: 0.92rem; color: var(--text-muted);"></p>
+    </section>
+
+    <footer class="site-footer">
+      <button type="button" class="btn btn-outline" id="rdBack">返回城市总览</button>
+    </footer>
+  </main>
+
+  <!-- 弹窗：地图点位 -->
+  <div class="popup" id="mapPopup" role="dialog" aria-modal="true">
+    <div class="popup-box">
+      <button type="button" class="popup-close" id="popupClose" aria-label="关闭">×</button>
+      <h4 id="popupTitle">标题</h4>
+      <p id="popupBody" style="font-size: 0.9rem; color: var(--text-muted);"></p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="img-lightbox" id="imgLightbox">
+    <button type="button" class="lb-close" id="lbClose" aria-label="关闭">×</button>
+    <img src="" alt="预览" id="lbImg" />
+  </div>
+
+  <script>
+(function () {
+  /* 高德：Web 端 Key 会暴露在源码中，请务必在控制台配置域名白名单；此对话若公开请轮换 Key */
+  var AMAP_KEY = "e11a80eb3ea7559f9d95b89df4b92234";
+  var AMAP_SECURITY_JS_CODE = "170f6e83d2681e8ea1253e2cbc42a4ef";
+
+  var DATA = {
+    cities: [
+      { id: "xian", name: "西安", pinyin: "xian", tagline: "十三朝古都", region: "西北", type: "hot", img: "https://images.unsplash.com/photo-1591122947157-26ac3c83b51a?w=800&q=80" },
+      { id: "beijing", name: "北京", pinyin: "beijing", tagline: "古今交汇", region: "华北", type: "hot", img: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80" },
+      { id: "shanghai", name: "上海", pinyin: "shanghai", tagline: "东方明珠", region: "华东", type: "hot", img: "https://images.unsplash.com/photo-1538428494232-9c0d0a9e9f18?w=800&q=80" },
+      { id: "chengdu", name: "成都", pinyin: "chengdu", tagline: "烟火与慢生活", region: "西南", type: "hot", img: "https://images.unsplash.com/photo-1565342404937-0c329fd9c73b?w=800&q=80" },
+      { id: "chongqing", name: "重庆", pinyin: "chongqing", tagline: "8D魔幻山城", region: "西南", type: "hot", img: "https://images.unsplash.com/photo-1534238915262-6967a0e51f85?w=800&q=80" },
+      { id: "changsha", name: "长沙", pinyin: "changsha", tagline: "夜宵与江湖", region: "华中", type: "hot", img: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&q=80" },
+      { id: "dali", name: "大理", pinyin: "dali", tagline: "风花雪月", region: "西南", type: "niche", img: "https://images.unsplash.com/photo-1526481280695-3c687fd543c1?w=800&q=80" },
+      { id: "quanzhou", name: "泉州", pinyin: "quanzhou", tagline: "闽南古城", region: "华东", type: "new", img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80" }
+    ],
+    hotIds: ["beijing", "shanghai", "chengdu", "chongqing", "xian", "changsha"]
+  };
+
+  function xh(cat, title, body, author, routeId, likes, coll, comm, feedback, keywords) {
+    return {
+      cat: cat,
+      title: title,
+      body: body,
+      author: author,
+      routeId: routeId,
+      likes: likes || 888,
+      collections: coll || 120,
+      comments: comm || 36,
+      feedback: feedback || [],
+      keywords: keywords || []
+    };
+  }
+
+  var CITY = {
+    xian: {
+      mapCenter: [108.954, 34.265],
+      mapZoom: 12,
+      heroImg: "https://images.unsplash.com/photo-1591122947157-26ac3c83b51a?w=1600&q=80",
+      ovDays: "2～3 天",
+      ovSeason: "3～5 月、9～11 月",
+      vibeTags: ["古都", "人文", "烟火美食"],
+      ovDesc: "西安坐拥周秦汉唐层层积淀，兵马俑与古城墙是硬核符号，回民街与夜市则串起舌尖与日常。走一趟，既要「看见历史」，也要「吃进生活」。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p style="margin-bottom: 0.75rem;"><strong style="color: var(--accent);">文化标签：</strong>周礼秦制、汉唐长安、丝路起点。</p><p style="margin-bottom: 0.75rem;"><strong style="color: var(--accent);">历史典故：</strong>汉长安与唐长安城叠压；唐诗「长安一片月」仍在夜色里回响。</p><p><strong style="color: var(--accent);">打卡建议：</strong>兵马俑 → 陕历博 → 城墙骑行 → 回民街。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1591122947157-26ac3c83b51a?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>城墙与文化景观</h4><p>示范配图</p></div></div>',
+      tips: [
+        { h: "交通", p: "机场 / 高铁地铁入城；核心景点地铁 + 步行，回民街宜步行。" },
+        { h: "住宿", p: "钟楼 / 南门 / 小寨一带轨交便利，按路线选中点入住。" },
+        { h: "避坑", p: "陕历博提前预约；兵马俑预留半日错峰；热门街区比价。" },
+        { h: "出片", p: "大雁塔南广场轴线、城墙角楼夕阳、大唐不夜城中轴灯光。" }
+      ],
+      pitfall: "暑期与假日陕历博排队久；不夜城夜间人流大。更多见总览「小红书」分类。",
+      transport: [
+        { k: "步行", v: "大雁塔 → 不夜城约 15～20 分钟。" },
+        { k: "地铁", v: "2 / 3 / 4 号线覆盖核心区。" },
+        { k: "自驾", v: "老城停车紧，优先轨交 + 网约车。" }
+      ],
+      routes: [
+        {
+          id: "xian-d1",
+          name: "西安经典一日游",
+          duration: "1 天",
+          crowd: "首次到访",
+          highlight: "陕历博 + 大雁塔 + 不夜城 + 回民街",
+          cover: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80",
+          timeline: ["09:00 陕西历史博物馆（预约，2～3h）", "12:00 大雁塔北广场用餐", "14:00 大雁塔漫步", "18:00 大唐不夜城", "20:30 回民街夜宵"],
+          tips: "地铁为主；博物馆周一可能闭馆（以官网为准）。",
+          detailTitle: "西安经典一日游",
+          detailSub: "历史 + 夜景 + 美食"
+        },
+        {
+          id: "xian-d2",
+          name: "长安人文两日游",
+          duration: "2 天",
+          crowd: "人文爱好者",
+          highlight: "兵马俑 + 城墙 + 碑林",
+          cover: "https://images.unsplash.com/photo-1591122947157-26ac3c83b51a?w=400&q=80",
+          timeline: ["D1 上午 兵马俑 + 丽山园", "D1 下午 华清宫（可选）", "D2 上午 城墙永宁门", "D2 下午 碑林 / 书院门"],
+          tips: "兵马俑离市区远，预留整天更从容。",
+          detailTitle: "长安人文两日游",
+          detailSub: "秦俑、城墙与金石书画"
+        },
+        {
+          id: "xian-kids",
+          name: "亲子放松线",
+          duration: "1～2 天",
+          crowd: "亲子家庭",
+          highlight: "互动展陈 + 舒缓节奏",
+          cover: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=400&q=80",
+          timeline: ["自然博物馆 / 科技馆", "城墙根公园", "大唐芙蓉园夜场（视开放）"],
+          tips: "低龄儿童少跨区，短驳打车。",
+          detailTitle: "西安亲子放松线",
+          detailSub: "轻松节奏"
+        }
+      ],
+      mapPoints: [
+        { id: "m1", kind: "sight", name: "陕西历史博物馆", x: 22, y: 38, lng: 108.954, lat: 34.225, desc: "通史大展，建议预约早场。" },
+        { id: "m2", kind: "sight", name: "大雁塔", x: 38, y: 52, lng: 108.964, lat: 34.218, desc: "南广场适合拍倒影。" },
+        { id: "m3", kind: "sight", name: "大唐不夜城", x: 48, y: 58, lng: 108.967, lat: 34.219, desc: "夜景步行街，演出以现场为准。" },
+        { id: "m4", kind: "food", name: "回民街", x: 30, y: 28, lng: 108.944, lat: 34.265, desc: "泡馍 / 烤肉 / 柿子饼。" },
+        { id: "m5", kind: "food", name: "永兴坊", x: 55, y: 35, lng: 108.985, lat: 34.275, desc: "小吃集合，浅尝多样。" }
+      ],
+      attractions: [
+        { cat: "热门", title: "大唐不夜城", img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80", desc: "免费步行街 · 夜景出片。", routeId: "xian-d1" },
+        { cat: "热门", title: "大雁塔", img: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80", desc: "地标 · 傍晚衔接不夜城。", routeId: "xian-d1" },
+        { cat: "人文", title: "陕西历史博物馆", img: "https://images.unsplash.com/photo-1566127444979-b3d3a6483c8e?w=600&q=80", desc: "周秦汉唐精华，务必预约。", routeId: "xian-d1" },
+        { cat: "人文", title: "兵马俑", img: "https://images.unsplash.com/photo-1599708153386-62bf3f2f9f51?w=600&q=80", desc: "建议半天以上。", routeId: "xian-d2" },
+        { cat: "自然", title: "骊山", img: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80", desc: "可结合华清宫。", routeId: "xian-d2" },
+        { cat: "亲子", title: "西安城墙", img: "https://images.unsplash.com/photo-1591122947157-26ac3c83b51a?w=600&q=80", desc: "可骑行，注意补水。", routeId: "xian-kids" }
+      ],
+      foods: [
+        { cat: "小吃", title: "肉夹馍 / 凉皮", img: "https://images.unsplash.com/photo-1626803775161-7eed5e37e1b7?w=600&q=80", desc: "老店口味更稳。", routeId: "xian-d1" },
+        { cat: "老字号", title: "羊肉泡馍", img: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80", desc: "手掰馍更传统。", routeId: "xian-d1" },
+        { cat: "网红", title: "长安茶咖创意店", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80", desc: "演示占位。", routeId: "xian-d2" },
+        { cat: "亲子", title: "糊辣汤早餐", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80", desc: "可问店家少辣版。", routeId: "xian-kids" }
+      ],
+      xhs: [
+        xh("路线", "西安一日暴走不绕路", "陕历博 → 大雁塔午饭 → 不夜城天黑前到场。", "旅行阿梨", "xian-d1", 2400, 412, 88, [{ u: "小沫", t: "按这个走真的省了很多回头路！" }, { u: "卡卡", t: "陕历博一定要抢先预约，别拖。" }], ["不绕路", "预约"]),
+        xh("避坑", "博物馆预约与排队", "提前 3～7 天约票；周一闭馆别跑空。", "西北跑线记", "xian-d1", 5600, 900, 210, [{ u: "阿庄", t: "假日前一周就放票，蹲点刷新。" }], ["预约", "闭馆"]),
+        xh("美食", "回民街怎么吃", "少吃门口拉客；支巷老店更深。", "吃货小分队", "xian-d1", 890, 120, 42, [{ u: "Momo", t: "柿子饼趁热，别买太大的。" }], ["回民街"]),
+        xh("贴士", "防晒与补水", "城墙与不夜城露天多，帽子必备。", "城市漫游", "xian-d2", 1200, 230, 51, [{ u: "路人甲", t: "夏季傍晚去不夜城舒服很多。" }], ["夏季"]),
+        xh("反馈", "真实体感：人多但值得", "不夜城演艺围观别挤太前，注意安全。", "背包客老王", "xian-d1", 430, 55, 19, [{ u: "亲子用户", t: "带娃建议拆成两天，别赶场。" }, { u: "摄影", t: "长焦拍大雁塔轴线更干净。" }], ["亲子", "摄影"])
+      ]
+    },
+    beijing: {
+      mapCenter: [116.397, 39.909],
+      mapZoom: 11,
+      heroImg: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1600&q=80",
+      ovDays: "3～4 天",
+      ovSeason: "4～5 月、9～10 月",
+      vibeTags: ["皇城", "中轴", "胡同"],
+      ovDesc: "故宫与中轴线奠定城市骨架，颐和园、长城把「帝国尺度」拉满；胡同与夜宵则把北京接回的日常烟火里。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p style="margin-bottom: 0.75rem;"><strong style="color: var(--accent);">文化标签：</strong>元明清京华、胡同四合院、京味曲艺。</p><p style="margin-bottom: 0.75rem;"><strong style="color: var(--accent);">行走建议：</strong>中轴（故宫—景山—钟鼓楼）理解都城规划。</p><p><strong style="color: var(--accent);">延伸阅读：</strong>京剧、琉璃厂书肆与皇家园林体系。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>紫禁城方向</h4><p>中轴与天际线</p></div></div>',
+      tips: [
+        { h: "交通", p: "地铁覆盖主要景区；长城段建议包车 / 直通巴士早出发。" },
+        { h: "住宿", p: "东城 / 朝阳门 / 前门轨交枢纽附近更省换乘。" },
+        { h: "避坑", p: "故宫、国博务必提前预约；长假长城极堵。" },
+        { h: "出片", p: "景山万春亭俯拍中轴；颐和园十七孔桥金光穿洞（冬至前后）。" }
+      ],
+      pitfall: "天安门与安检排队长；暑期热门馆「一票难求」。小红书经验区可搜「北京 预约 合集」。",
+      transport: [
+        { k: "步行", p: "故宫出口至景山约 10 分钟。" },
+        { k: "地铁", v: "1 / 2 / 8 号线覆盖核心景点。" },
+        { k: "长城", v: "877 路 / 直通车或包车，早起错峰。" }
+      ],
+      routes: [
+        {
+          id: "bj-d1",
+          name: "中轴经典一日游",
+          duration: "1 天",
+          crowd: "首次入京",
+          highlight: "故宫 + 景山 + 胡同夜色",
+          cover: "https://images.unsplash.com/photo-1599571234908-28701eb13cb7?w=400&q=80",
+          timeline: ["08:30 故宫（预约）", "12:00 景山俯瞰", "15:00 北海 / 什刹海", "18:30 前门大街夜景"],
+          tips: "故宫单向游览，穿舒适鞋。",
+          detailTitle: "北京中轴经典一日游",
+          detailSub: "皇城尺度入门"
+        },
+        {
+          id: "bj-gw",
+          name: "长城 + 颐和园二日",
+          duration: "2 天",
+          crowd: "家庭 / 摄影",
+          highlight: "八达岭或慕田峪 + 皇家园林",
+          cover: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=400&q=80",
+          timeline: ["D1 长城早出晚归", "D2 上午颐和园", "D2 下午圆明园或清华园周边"],
+          tips: "长城风大，备外套；颐和园买联票看园中园。",
+          detailTitle: "长城颐和园线",
+          detailSub: "京郊与园林"
+        }
+      ],
+      mapPoints: [
+        { kind: "sight", name: "故宫", x: 50, y: 50, lng: 116.397, lat: 39.918, desc: "须预约，周一闭馆（小主题馆除外以官网为准）。" },
+        { kind: "sight", name: "景山公园", x: 52, y: 48, lng: 116.397, lat: 39.928, desc: "俯拍紫禁城全景。" },
+        { kind: "sight", name: "颐和园", x: 30, y: 35, lng: 116.275, lat: 39.999, desc: "昆明湖环岛步行惬意。" },
+        { kind: "food", name: "前门小吃圈", x: 48, y: 55, lng: 116.398, lat: 39.896, desc: "烤鸭、炸酱面、卤煮多方对比。" }
+      ],
+      attractions: [
+        { cat: "热门", title: "故宫博物院", img: "https://images.unsplash.com/photo-1599571234908-28701eb13cb7?w=600&q=80", desc: "中国古代宫城建筑巅峰样本。", routeId: "bj-d1" },
+        { cat: "人文", title: "天坛公园", img: "https://images.unsplash.com/photo-1547986169-19c890e0d79d?w=600&q=80", desc: "祭天建筑群，声学设计精妙。", routeId: "bj-d1" },
+        { cat: "亲子", title: "颐和园", img: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80", desc: "龙舟码头、长廊故事适合亲子。", routeId: "bj-gw" }
+      ],
+      foods: [
+        { cat: "老字号", title: "烤鸭", img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80", desc: "果木炉香，提前排队。", routeId: "bj-d1" },
+        { cat: "小吃", title: "炸酱面 / 卤煮", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80", desc: "胡同老店更稳。", routeId: "bj-d1" }
+      ],
+      xhs: [
+        xh("路线", "故宫不走回头路", "午门进神武门出，出神武门直奔景山。", "京城溜达", "bj-d1", 3100, 500, 120, [{ u: "uu", t: "记得带充电宝，里面借还点少。" }], ["故宫"]),
+        xh("避坑", "长城别太晚出发", "877 早班或包车，午后返程堵车严重。", "北漂小林", "bj-gw", 2200, 340, 90, [{ u: "带娃", t: "慕田峪缆车对家庭更友好。" }], ["长城"]),
+        xh("反馈", "前门夜景与步行距离", "前门到天安门广场步行要留足安检时间。", "夜行地图", "bj-d1", 980, 88, 28, [{ u: "匿名", t: "国庆别开车进二环，地铁更稳。" }], ["前门"])
+      ]
+    },
+    shanghai: {
+      mapCenter: [121.473, 31.230],
+      mapZoom: 11,
+      heroImg: "https://images.unsplash.com/photo-1538428494232-9c0d0a9e9f18?w=1600&q=80",
+      ovDays: "2～3 天",
+      ovSeason: "3～5 月、10～11 月",
+      vibeTags: ["海派", "外滩", "咖啡"],
+      ovDesc: "外滩—陆家嘴的天际线，法租界的梧桐与咖啡，老城厢的小吃共同构成「魔都」多面体。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p style="margin-bottom: 0.75rem;"><strong style="color: var(--accent);">文化标签：</strong>十里洋场、海派文化、近代建筑博物馆。</p><p><strong style="color: var(--accent);">建议：</strong>外滩清晨与陆家嘴夜色各看一次。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1538428494232-9c0d0a9e9f18?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>陆家嘴天际线</h4><p>黄浦江两岸</p></div></div>',
+      tips: [
+        { h: "交通", p: "地铁密集；跨江可坐轮渡体验。" },
+        { h: "住宿", p: "人民广场 / 静安 / 徐家汇择一，轨交换乘为主。" },
+        { h: "避坑", p: "迪士尼与 major 活动日排队极长，提前买票。" },
+        { h: "出片", p: "北外滩滨江、外滩源、武康大楼街角。" }
+      ],
+      pitfall: "部分网红店排队久；雨天江风大。可参考小红书「上海 citywalk」合集。",
+      transport: [
+        { k: "步行", p: "外滩滨江慢行带适合傍晚。" },
+        { k: "地铁", v: "2 / 10 / 14 号线串联浦西浦东。" },
+        { k: "轮渡", v: "东昌路—金陵东路看江景性价比高。" }
+      ],
+      routes: [
+        {
+          id: "sh-bund",
+          name: "外滩—梧桐区一日",
+          duration: "1 天",
+          crowd: "首次到访",
+          highlight: "外滩 + 南京东路 + 武康路",
+          cover: "https://images.unsplash.com/photo-1538428494232-9c0d0a9e9f18?w=400&q=80",
+          timeline: ["09:00 外滩晨景", "11:00 南京东路午餐", "14:00 武康路—安福路咖啡", "18:30 陆家嘴滨江夜景"],
+          tips: "周末外滩人流大，错峰清晨。",
+          detailTitle: "外滩梧桐区一日",
+          detailSub: "经典城市肖像"
+        },
+        {
+          id: "sh-disney",
+          name: "迪士尼专项日",
+          duration: "1 天",
+          crowd: "亲子 / 情侣",
+          highlight: "烟花 + 项目清单玩法",
+          cover: "https://images.unsplash.com/photo-1596272888309-ab0c85b6c5b8?w=400&q=80",
+          timeline: ["08:00 入场冲热门", "午后演出与巡游", "20:30 烟花占位"],
+          tips: "官方 App 看排队；带充电宝。",
+          detailTitle: "迪士尼专项日",
+          detailSub: "节奏型玩法"
+        }
+      ],
+      mapPoints: [
+        { kind: "sight", name: "外滩", x: 55, y: 45, lng: 121.491, lat: 31.239, desc: "万国建筑博览带。" },
+        { kind: "sight", name: "陆家嘴", x: 60, y: 50, lng: 121.499, lat: 31.239, desc: "三件套打卡。" },
+        { kind: "sight", name: "武康大楼", x: 40, y: 55, lng: 121.441, lat: 31.213, desc: "街角著名邬达克作品。" },
+        { kind: "food", name: "城隍庙小吃", x: 50, y: 52, lng: 121.492, lat: 31.227, desc: "小笼 / 生煎多方对比。" }
+      ],
+      attractions: [
+        { cat: "热门", title: "外滩", img: "https://images.unsplash.com/photo-1538428494232-9c0d0a9e9f18?w=600&q=80", desc: "日夜景各不同。", routeId: "sh-bund" },
+        { cat: "亲子", title: "上海迪士尼", img: "https://images.unsplash.com/photo-1596272888309-ab0c85b6c5b8?w=600&q=80", desc: "官方渠道购票。", routeId: "sh-disney" }
+      ],
+      foods: [
+        { cat: "小吃", title: "小笼包", img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80", desc: "趁热先开窗。", routeId: "sh-bund" },
+        { cat: "网红", title: "精品咖啡", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80", desc: "安福路 / 永康路一带。", routeId: "sh-bund" }
+      ],
+      xhs: [
+        xh("路线", "外滩清晨比晚上更出片", "06:30 前到，光线柔、人少。", "魔都拍照机位", "sh-bund", 4500, 700, 160, [{ u: "索尼党", t: "广角注意垂直透视。" }], ["外滩"]),
+        xh("贴士", "迪士尼省力走法", "进门先冲排队最短的热门，下午看演出。", "乐园少女", "sh-disney", 8900, 1200, 400, [{ u: "家长", t: "推车租借在门口，别中带车翻越。" }], ["迪士尼"]),
+        xh("反馈", "轮渡看日落", "2 元档位就很香，别挤观光邮轮。", "江边走走", "sh-bund", 1200, 200, 44, [{ u: "游客", t: "金陵东路渡口傍晚绝美。" }], ["轮渡"])
+      ]
+    },
+    chengdu: {
+      mapCenter: [104.066, 30.572],
+      mapZoom: 12,
+      heroImg: "https://images.unsplash.com/photo-1565342404937-0c329fd9c73b?w=1600&q=80",
+      ovDays: "3～4 天",
+      ovSeason: "3～6 月、9～11 月",
+      vibeTags: ["慢生活", "熊猫", "辣味"],
+      ovDesc: "茶馆与麻将声定义日常节奏，火锅与串串把社交温度拉高；城郊熊猫基地与青城山补足自然面。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p><strong style="color: var(--accent);">文化标签：</strong>巴蜀、川剧变脸、三国遗迹。</p><p style="margin-top:0.75rem"><strong style="color: var(--accent);">建议：</strong>宽窄巷子快速过，把时间留给人民公园喝茶。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1565342404937-0c329fd9c73b?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>巴蜀慢调</h4><p>街巷与茶香</p></div></div>',
+      tips: [
+        { h: "交通", p: "地铁 + 共享单车覆盖平原城区；都江堰高铁方便。" },
+        { h: "饮食", p: "火锅可点「微辣」起跳；备肠胃药。" },
+        { h: "熊猫", p: "基地开门就进，熊猫上午活跃。" },
+        { h: "夜景", p: "九眼桥酒吧街 vs 望平街咖啡夜市二选一即可。" }
+      ],
+      pitfall: "假日春熙路、熊猫基地极挤；小红书搜「成都 错峰」。",
+      transport: [
+        { k: "步行", p: "宽窄—奎星楼—人民公园可串联。" },
+        { k: "地铁", v: "1 / 2 / 3 / 4 号线为主干。" },
+        { k: "近郊", v: "犀浦站换乘城际去都江堰。" }
+      ],
+      routes: [
+        {
+          id: "cd-city",
+          name: "市区经典一日",
+          duration: "1 天",
+          crowd: "吃货 / 城市漫游",
+          highlight: "熊猫基地 + 宽窄 + 火锅",
+          cover: "https://images.unsplash.com/photo-1565342404937-0c329fd9c73b?w=400&q=80",
+          timeline: ["07:30 熊猫基地", "12:00 宽窄巷子午餐", "15:00 人民公园鹤鸣茶社", "19:00 火锅夜宵"],
+          tips: "基地早去；火锅排队提前取号。",
+          detailTitle: "成都市区经典一日",
+          detailSub: "熊猫与烟火"
+        },
+        {
+          id: "cd-mt",
+          name: "青城山都江堰一日",
+          duration: "1 天",
+          crowd: "自然 / 徒步",
+          highlight: "水利工程 + 青城前山",
+          cover: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&q=80",
+          timeline: ["上午 都江堰景区", "下午 青城前山（索道视体力）", "傍晚返程"],
+          tips: "防水外套；前山台阶多，穿防滑鞋。",
+          detailTitle: "青城山都江堰",
+          detailSub: "山水线"
+        }
+      ],
+      mapPoints: [
+        { kind: "sight", name: "大熊猫繁育研究基地", x: 45, y: 30, lng: 104.146, lat: 30.741, desc: "早起进场。" },
+        { kind: "sight", name: "宽窄巷子", x: 48, y: 52, lng: 104.055, lat: 30.661, desc: "商业化高，速览即可。" },
+        { kind: "sight", name: "春熙路 / IFS", x: 52, y: 55, lng: 104.082, lat: 30.659, desc: "爬墙熊猫打卡。" },
+        { kind: "food", name: "建设巷夜市", x: 40, y: 58, lng: 104.101, lat: 30.674, desc: "串串与小吃密度高。" }
+      ],
+      attractions: [
+        { cat: "热门", title: "熊猫基地", img: "https://images.unsplash.com/photo-1525385133512-2f3bdd039054?w=600&q=80", desc: "看滚滚要赶早。", routeId: "cd-city" },
+        { cat: "人文", title: "武侯祠", img: "https://images.unsplash.com/photo-1590418606746-0d4b0294ba07?w=600&q=80", desc: "三国迷必到。", routeId: "cd-city" },
+        { cat: "自然", title: "青城山", img: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80", desc: "道教名山，氧含量高。", routeId: "cd-mt" }
+      ],
+      foods: [
+        { cat: "小吃", title: "钵钵鸡 / 串串", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80", desc: "油香与芝麻香平衡。", routeId: "cd-city" },
+        { cat: "老字号", title: "川味火锅", img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80", desc: "鸳鸯锅是尊重。", routeId: "cd-city" }
+      ],
+      xhs: [
+        xh("美食", "成都辣度怎么点", "从微辣开始，香油碟降温。", "辣妹测评", "cd-city", 6700, 800, 210, [{ u: "广东人", t: "点微微辣并要一碗白饭续命。" }], ["火锅"]),
+        xh("路线", "熊猫基地省体力", "进门坐观光车到月亮产房再往下走。", "滚滚攻略", "cd-city", 5400, 900, 300, [{ u: "亲子", t: "婴儿车可进，但台阶段要抬。" }], ["熊猫"]),
+        xh("反馈", "人民公园喝茶放空", "鹤鸣茶社要自己找座，耐心等一下。", "慢半拍", "cd-city", 890, 66, 22, [{ u: "游客", t: "掏耳朵价格先问好。" }], ["人民公园"])
+      ]
+    },
+    chongqing: {
+      mapCenter: [106.551, 29.563],
+      mapZoom: 11,
+      heroImg: "https://images.unsplash.com/photo-1534238915262-6967a0e51f85?w=1600&q=80",
+      ovDays: "2～3 天",
+      ovSeason: "4～6 月、9～10 月",
+      vibeTags: ["立体", "夜景", "火锅"],
+      ovDesc: "轻轨穿楼与台阶巷弄构成 8D 迷阵；两江夜景与火锅是城市性格的直接表达。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p><strong style="color: var(--accent);">文化：</strong>码头文化、抗战陪都记忆、川江号子。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1534238915262-6967a0e51f85?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>山城夜色</h4><p>两江交汇</p></div></div>',
+      tips: [
+        { h: "腿脚", p: "平底防滑鞋；导航仅供参考问本地人。" },
+        { h: "夜景", p: "洪崖洞对岸江边机位更全。" },
+        { h: "辣", p: "老火锅谨慎全红锅。" }
+      ],
+      pitfall: "假日洪崖洞人流管控，排队久。",
+      transport: [
+        { k: "轻轨", v: "2 / 3 号线观景段多。" },
+        { k: "两江游", v: "夜游选正规船司。" },
+        { k: "步行", v: "解放碑—洪崖洞高差大，留足时间。" }
+      ],
+      routes: [
+        {
+          id: "cq-nj",
+          name: "夜市与两江一夜",
+          duration: "1 天",
+          crowd: "夜景控",
+          highlight: "解放碑 + 洪崖洞 + 南滨路",
+          cover: "https://images.unsplash.com/photo-1534238915262-6967a0e51f85?w=400&q=80",
+          timeline: ["16:00 解放碑", "18:00 千厮门大桥走位", "19:30 洪崖洞亮灯", "21:00 南滨路吹风"],
+          tips: "亮灯时间以当季为准。",
+          detailTitle: "重庆夜市两江线",
+          detailSub: "立体夜景"
+        }
+      ],
+      mapPoints: [
+        { kind: "sight", name: "洪崖洞", x: 50, y: 55, lng: 106.577, lat: 29.562, desc: "夜景地标。" },
+        { kind: "sight", name: "解放碑", x: 48, y: 52, lng: 106.575, lat: 29.558, desc: "老城商业核心。" },
+        { kind: "food", name: "八一路好吃街", x: 49, y: 53, lng: 106.576, lat: 29.557, desc: "酸辣粉 / 小面快手体验。" }
+      ],
+      attractions: [
+        { cat: "热门", title: "洪崖洞", img: "https://images.unsplash.com/photo-1534238915262-6967a0e51f85?w=600&q=80", desc: "亮灯后立体吊脚楼观感。", routeId: "cq-nj" }
+      ],
+      foods: [
+        { cat: "小吃", title: "重庆小面", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80", desc: "早餐来二两。", routeId: "cq-nj" }
+      ],
+      xhs: [
+        xh("避坑", "洪崖洞别信带路快速通道", "跟着官方指示牌走。", "山城避雷", "cq-nj", 4100, 520, 130, [{ u: "本地人", t: "江对岸拍全景更震撼。" }], ["洪崖洞"]),
+        xh("反馈", "导航在重庆", "看「上下」而不只看左右。", "迷路系游客", "cq-nj", 2300, 300, 95, [{ u: "路痴", t: "轻轨出口编号记牢。" }], ["导航"])
+      ]
+    },
+    changsha: {
+      mapCenter: [112.938, 28.228],
+      mapZoom: 11,
+      heroImg: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&q=80",
+      ovDays: "2～3 天",
+      ovSeason: "春秋适宜",
+      vibeTags: ["夜宵", "娱乐", "江湖菜"],
+      ovDesc: "坡子街与文和友把「夜游经济」做成名片，湘江边则给城市留一口喘息。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p><strong style="color: var(--accent);">文化：</strong>楚汉名城、湘江风物、电视娱乐工业。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>星城夜色</h4><p>烟火与灯海</p></div></div>',
+      tips: [
+        { h: "辣", p: "湘菜香辣，可先试「免辣」或「微辣」。" },
+        { h: "茶颜", p: "多店分流排队，别死磕单店。" }
+      ],
+      pitfall: "节假日五一广场人流量巨大。",
+      transport: [
+        { k: "地铁", v: "1 / 2 号线覆盖核心。" },
+        { k: "步行", v: "坡子街—黄兴路步行区相连。" }
+      ],
+      routes: [
+        {
+          id: "cs-night",
+          name: "星城夜宵一晚",
+          duration: "1 天",
+          crowd: "吃货",
+          highlight: "坡子街 + 文和友 + 江边",
+          cover: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&q=80",
+          timeline: ["18:00 坡子街小吃", "20:00 超级文和友", "22:00 湘江边散步"],
+          tips: "文和友预约/排队策略看当日公告。",
+          detailTitle: "长沙夜宵线",
+          detailSub: "辣味与江风"
+        }
+      ],
+      mapPoints: [
+        { kind: "sight", name: "橘子洲头", x: 45, y: 50, lng: 112.962, lat: 28.197, desc: "青年雕塑与江景。" },
+        { kind: "food", name: "坡子街", x: 50, y: 52, lng: 112.972, lat: 28.192, desc: "臭豆腐 / 糖油粑粑。" }
+      ],
+      attractions: [
+        { cat: "热门", title: "岳麓书院", img: "https://images.unsplash.com/photo-1547986169-19c890e0d79d?w=600&q=80", desc: "千年书院，爱晚亭在旁。", routeId: "cs-night" }
+      ],
+      foods: [
+        { cat: "小吃", title: "臭豆腐 / 小龙虾", img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80", desc: "夜宵双子星。", routeId: "cs-night" }
+      ],
+      xhs: [
+        xh("美食", "茶颜排队攻略", "商圈多店对比，外带有时更快。", "奶茶特种兵", "cs-night", 7800, 900, 260, [{ u: "用户", t: "先试玻璃杯装再看要不要加购。" }], ["茶颜"]),
+        xh("反馈", "文和友值不值得", "当城市场景拍照很可，别期待口味满分。", "实话实说", "cs-night", 2100, 240, 80, [{ u: "摄影", t: "室内光线复杂，带大光圈。" }], ["文和友"])
+      ]
+    },
+    dali: {
+      mapCenter: [100.225, 25.597],
+      mapZoom: 10,
+      heroImg: "https://images.unsplash.com/photo-1526481280695-3c687fd543c1?w=1600&q=80",
+      ovDays: "3～5 天",
+      ovSeason: "全年，雨季注意路况",
+      vibeTags: ["苍山洱海", "慢旅", "摄影"],
+      ovDesc: "洱海环湖与古城白族院落定义松弛节奏；喜洲麦浪与双廊日落是小红书高频关键词。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p><strong style="color: var(--accent);">文化：</strong>白族三道茶、扎染与甲马版画。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1526481280695-3c687fd543c1?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>洱海之光</h4><p>环湖路</p></div></div>',
+      tips: [
+        { h: "防晒", p: "高原紫外线强，物理防晒优先。" },
+        { h: "环湖", p: "电动 / 包车 / 骑行按体力选择。" }
+      ],
+      pitfall: "洱海生态廊道规则常有调整，出发前复核。",
+      transport: [
+        { k: "环湖", v: "海东看日落，海西看晨雾（季节相关）。" },
+        { k: "古城", v: "步行 + 电瓶车即可。" }
+      ],
+      routes: [
+        {
+          id: "dl-lake",
+          name: "洱海东西岸精选",
+          duration: "2 天",
+          crowd: "度假 / 摄影",
+          highlight: "古城 + 喜洲 + 双廊",
+          cover: "https://images.unsplash.com/photo-1526481280695-3c687fd543c1?w=400&q=80",
+          timeline: ["D1 古城三月街 / 床单厂艺术区", "D2 喜洲古镇麦浪季", "傍晚双廊看日落"],
+          tips: "麦浪季与节假日人流反差大。",
+          detailTitle: "洱海精选线",
+          detailSub: "湖光与白族村落"
+        }
+      ],
+      mapPoints: [
+        { kind: "sight", name: "大理古城", x: 48, y: 52, lng: 100.164, lat: 25.698, desc: "夜生活丰富但商业化高。" },
+        { kind: "sight", name: "双廊观景台", x: 58, y: 45, lng: 100.392, lat: 25.915, desc: "日落朝西看苍山。" },
+        { kind: "food", name: "喜洲粑粑", x: 42, y: 48, lng: 100.134, lat: 25.851, desc: "甜咸都试。" }
+      ],
+      attractions: [
+        { cat: "热门", title: "洱海生态廊道", img: "https://images.unsplash.com/photo-1526481280695-3c687fd543c1?w=600&q=80", desc: "徒步骑行亲水。", routeId: "dl-lake" }
+      ],
+      foods: [
+        { cat: "小吃", title: "乳扇 / 饵丝", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80", desc: "乳制品敏感者适量。", routeId: "dl-lake" }
+      ],
+      xhs: [
+        xh("贴士", "洱海拍照机位", "避开正午顶光，早晚柔和。", "胶片旅人", "dl-lake", 1600, 220, 55, [{ u: "用户", t: "包车司机路线可协商停靠点。" }], ["洱海"]),
+        xh("反馈", "雨季环湖", "备好雨披比雨伞防风。", "云南天气号", "dl-lake", 980, 100, 30, [{ u: "摩旅", t: "部分路段风大慎骑。" }], ["天气"])
+      ]
+    },
+    quanzhou: {
+      mapCenter: [118.676, 24.874],
+      mapZoom: 11,
+      heroImg: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1600&q=80",
+      ovDays: "2～3 天",
+      ovSeason: "四季皆可",
+      vibeTags: ["世遗", "闽南", "寺庙密度"],
+      ovDesc: "「半城烟火半城仙」：开元寺、清净寺与关岳庙比邻，老城小巷里藏着蚵仔煎与面线糊。",
+      cultureHtml:
+        '<div style="grid-column: 1 / -1; font-size: 0.95rem; line-height: 1.7;"><p><strong style="color: var(--accent);">文化：</strong>海上丝绸之路起点、多元宗教并存。</p></div>' +
+        '<div class="media-card"><img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80" alt="" data-lightbox /><div class="body"><h4>闽南古城</h4><p>庙宇与巷弄</p></div></div>',
+      tips: [
+        { h: "步行", p: "古城区适合暴走细逛。" },
+        { h: "饮食", p: "海鲜与小吃都新鲜，少食多餐。" }
+      ],
+      pitfall: "暑期炎热潮湿，午后安排室内庙馆。",
+      transport: [
+        { k: "古城", v: "小白车（当地公交）或步行。" },
+        { k: "出海", v: "蟳埔女簪花体验需预约热门店。" }
+      ],
+      routes: [
+        {
+          id: "qz-old",
+          name: "世遗古城一日",
+          duration: "1 天",
+          crowd: "人文深度游",
+          highlight: "开元寺 + 西街 + 关岳庙",
+          cover: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80",
+          timeline: ["09:00 开元寺", "11:00 西街小吃", "14:00 清净寺", "16:00 关岳庙香火", "18:00 钟楼夜景"],
+          tips: "寺庙礼仪：勿大声喧哗、尊重摄影限制。",
+          detailTitle: "泉州世遗古城线",
+          detailSub: "神佛与人间的缝隙"
+        }
+      ],
+      mapPoints: [
+        { kind: "sight", name: "开元寺", x: 50, y: 50, lng: 118.586, lat: 24.909, desc: "东西塔地标。" },
+        { kind: "sight", name: "西街", x: 49, y: 51, lng: 118.585, lat: 24.908, desc: "美食集中。" },
+        { kind: "food", name: "水门国仔面线糊", x: 48, y: 52, lng: 118.59, lat: 24.905, desc: "早餐明星（店名演示）。" }
+      ],
+      attractions: [
+        { cat: "人文", title: "泉州古城", img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80", desc: "整片列入遗产缓冲区，步行探索。", routeId: "qz-old" }
+      ],
+      foods: [
+        { cat: "小吃", title: "土笋冻 / 姜母鸭", img: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80", desc: "风味独特，先试少量。", routeId: "qz-old" }
+      ],
+      xhs: [
+        xh("路线", "泉州古城暴走地图", "宗教场所相邻，千万别跳过清净寺。", "闽南纪行", "qz-old", 2900, 360, 90, [{ u: "建筑爱好者", t: "东西塔细节多到爆棚，留足快门。" }], ["古城"]),
+        xh("反馈", "簪花体验", "早到选花材颜色更全。", "岛民少女", "qz-old", 5600, 900, 200, [{ u: "体验派", t: "问清价格是否含摄影。" }], ["蟳埔"])
+      ]
+    }
+  };
+
+  var currentCityId = "xian";
+  var amapMain = null;
+  var amapDetail = null;
+  var amapMarkersMain = [];
+  var amapMarkersDetail = [];
+  var amapLoadState = "idle";
+
+  function getCity() {
+    return CITY[currentCityId];
+  }
+
+  function allRoutes() {
+    var list = [];
+    Object.keys(CITY).forEach(function (id) {
+      (CITY[id].routes || []).forEach(function (r) {
+        list.push(r);
+      });
+    });
+    return list;
+  }
+
+  function routeById(rid) {
+    var all = allRoutes();
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].id === rid) return all[i];
+    }
+    return null;
+  }
+
+  var toastEl = document.getElementById("toast");
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () {
+      toastEl.classList.remove("show");
+    }, 2200);
+  }
+
+  function showPage(id) {
+    document.querySelectorAll(".page").forEach(function (p) {
+      p.classList.remove("active");
+    });
+    var el = document.getElementById("page-" + id);
+    if (el) el.classList.add("active");
+    document.querySelectorAll(".nav-links button").forEach(function (b) {
+      var dp = b.getAttribute("data-page");
+      b.classList.toggle("active-nav", dp === id || (id === "city" && dp === "city"));
+    });
+    window.scrollTo(0, 0);
+    if (id === "city") {
+      setTimeout(function () {
+        initAmapMain();
+      }, 80);
+    }
+  }
+
+  function openCity(cityId) {
+    if (!CITY[cityId]) {
+      toast("暂无该城市数据");
+      return;
+    }
+    currentCityId = cityId;
+    applyCityToDom();
+    showPage("city");
+  }
+
+  function applyCityToDom() {
+    var meta = DATA.cities.find(function (c) {
+      return c.id === currentCityId;
+    });
+    var page = getCity();
+    document.getElementById("cityNameH").textContent = meta ? meta.name : currentCityId;
+    document.getElementById("cityTagline").textContent = meta ? meta.tagline : "";
+    document.getElementById("citySoulOne").textContent = page.ovDesc;
+    document.getElementById("cityHeroBg").style.backgroundImage =
+      "linear-gradient(to top, rgba(0,0,0,0.65), transparent 40%), url(\"" + page.heroImg + "\")";
+    document.getElementById("ovDays").textContent = page.ovDays;
+    document.getElementById("ovSeason").textContent = page.ovSeason;
+    document.getElementById("ovDesc").textContent = page.ovDesc;
+    var tags = document.getElementById("ovTags");
+    tags.innerHTML = (page.vibeTags || [])
+      .map(function (t) {
+        return '<span class="tag-pill">' + t + "</span>";
+      })
+      .join("");
+    document.getElementById("cultureWrap").innerHTML = page.cultureHtml;
+    document.getElementById("tipsList").innerHTML = (page.tips || [])
+      .map(function (x) {
+        return '<div class="tip-item"><h4>' + x.h + "</h4><p>" + x.p + "</p></div>";
+      })
+      .join("");
+    document.getElementById("cityFooterLbl").textContent = "一城玩透 · " + (meta ? meta.name : "") + "攻略";
+    bindLightbox(document.getElementById("cultureWrap"));
+    attrTab = foodTab = xhsTab = "全部";
+    renderRoutes();
+    renderAttractions();
+    renderFoods();
+    renderXhs();
+  }
+
+  function cityIdForRoute(rid) {
+    var found = null;
+    Object.keys(CITY).forEach(function (cid) {
+      if ((CITY[cid].routes || []).some(function (r) {
+        return r.id === rid;
+      }))
+        found = cid;
+    });
+    return found;
+  }
+
+  function xhsSearchUrl(keyword) {
+    return "https://www.xiaohongshu.com/search_result?keyword=" + encodeURIComponent(keyword);
+  }
+
+  function openRouteDetail(route) {
+    document.getElementById("rdTitle").textContent = route.detailTitle;
+    document.getElementById("rdSub").textContent = route.detailSub;
+    var tl = document.getElementById("rdTimeline");
+    tl.innerHTML = route.timeline
+      .map(function (line) {
+        var sp = line.indexOf(" ");
+        var time = sp > 0 ? line.slice(0, sp) : line;
+        var rest = sp > 0 ? line.slice(sp + 1) : "";
+        return "<li><strong>" + time + "</strong> " + rest + "</li>";
+      })
+      .join("");
+    var cards = document.getElementById("rdCards");
+    cards.innerHTML =
+      '<div class="media-card"><img src="' +
+      route.cover +
+      '" alt="" data-lightbox /><div class="body"><h4>路线封面</h4><p>' +
+      route.highlight +
+      "</p></div></div>";
+    var page = getCity();
+    var tr = document.getElementById("rdTransport");
+    tr.innerHTML = (route.transport || page.transport || [])
+      .map(function (x) {
+        return (
+          '<div class="info-box"><strong>' + (x.k || x.title || "提示") + "</strong><span>" + (x.v || x.p || "") + "</span></div>"
+        );
+      })
+      .join("");
+    document.getElementById("rdPitfall").textContent = route.pitfall || page.pitfall || "";
+    window.__currentRoute = route;
+    showPage("route-detail");
+    setTimeout(function () {
+      initAmapDetail();
+    }, 60);
+  }
+
+  function ensurePercentXY(pt) {
+    if (pt.x != null && pt.y != null) return pt;
+    return { x: 50, y: 50, kind: pt.kind, name: pt.name, desc: pt.desc, lng: pt.lng, lat: pt.lat };
+  }
+
+  function buildMapSvg(points, withPath) {
+    var pts = points.map(ensurePercentXY);
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("class", "map-svg");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    if (withPath && pts.length > 1) {
+      var path = document.createElementNS(ns, "path");
+      var d = "M " + pts[0].x + " " + pts[0].y;
+      for (var i = 1; i < pts.length; i++) {
+        d += " L " + pts[i].x + " " + pts[i].y;
+      }
+      path.setAttribute("d", d);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "#409EFF");
+      path.setAttribute("stroke-width", "1.2");
+      path.setAttribute("stroke-dasharray", "3 2");
+      path.setAttribute("opacity", "0.85");
+      svg.appendChild(path);
+    }
+    pts.forEach(function (pt) {
+      var c = document.createElementNS(ns, "circle");
+      c.setAttribute("cx", pt.x);
+      c.setAttribute("cy", pt.y);
+      c.setAttribute("r", pt.kind === "food" ? "3" : "2.8");
+      c.setAttribute("fill", pt.kind === "food" ? "#FF7D40" : "#409EFF");
+      c.setAttribute("stroke", "#fff");
+      c.setAttribute("stroke-width", "0.8");
+      c.setAttribute("class", "map-marker");
+      c.addEventListener("click", function () {
+        openPopup(pt.name, pt.desc || "");
+      });
+      svg.appendChild(c);
+    });
+    return svg;
+  }
+
+  function fallbackMap(container, points, hint) {
+    container.innerHTML = "";
+    var hintEl = document.createElement("div");
+    hintEl.className = "map-fallback-hint";
+    hintEl.textContent = hint || "示意地图（高德不可用）";
+    var stage = document.createElement("div");
+    stage.style.cssText = "position:absolute;inset:0;";
+    stage.appendChild(buildMapSvg(points, true));
+    container.style.position = "relative";
+    container.appendChild(stage);
+    container.appendChild(hintEl);
+  }
+
+  function destroyAmap(mapObj, markers) {
+    if (mapObj && mapObj.destroy) {
+      try {
+        mapObj.destroy();
+      } catch (e) {}
+    }
+    markers.length = 0;
+  }
+
+  function buildAmap(containerId, center, zoom, points, fitDetail) {
+    var container = document.getElementById(containerId);
+    if (!window.AMap) {
+      fallbackMap(container, points, "高德脚本未加载 · 示意地图");
+      return null;
+    }
+    var map = new AMap.Map(container, {
+      viewMode: "2D",
+      zoom: zoom,
+      center: center,
+      mapStyle: "amap://styles/normal"
+    });
+    var path = [];
+    points.forEach(function (pt) {
+      if (pt.lng == null || pt.lat == null) return;
+      var lnglat = [pt.lng, pt.lat];
+      path.push(lnglat);
+      var marker = new AMap.Marker({
+        position: lnglat,
+        title: pt.name,
+        label: { content: pt.name, direction: "top" }
+      });
+      marker.on("click", function () {
+        openPopup(pt.name, pt.desc || "");
+      });
+      map.add(marker);
+      (containerId === "amapMain" ? amapMarkersMain : amapMarkersDetail).push(marker);
+    });
+    if (path.length > 1) {
+      var poly = new AMap.Polyline({
+        path: path,
+        strokeColor: "#409eff",
+        strokeWeight: 4,
+        strokeOpacity: 0.85,
+        strokeStyle: "dashed"
+      });
+      map.add(poly);
+    }
+    if (fitDetail && path.length) {
+      try {
+        map.setFitView(null, false, [48, 48, 48, 48]);
+      } catch (e1) {
+        try {
+          map.setFitView();
+        } catch (e2) {}
+      }
+    }
+    return map;
+  }
+
+  function initAmapMain() {
+    var page = getCity();
+    var pts = page.mapPoints || [];
+    var stage = document.getElementById("mapStage");
+    destroyAmap(amapMain, amapMarkersMain);
+    amapMain = null;
+    stage.innerHTML = '<div id="amapMain" class="map-amap"></div>';
+    function draw() {
+      amapMain = buildAmap("amapMain", page.mapCenter, page.mapZoom, pts, false);
+    }
+    loadAmap(draw, function () {
+      fallbackMap(stage, pts, "高德加载失败 · 已使用示意地图（检查 Key 白名单与网络）");
+    });
+  }
+
+  function initAmapDetail() {
+    if (!window.__currentRoute) return;
+    var page = getCity();
+    var pts = page.mapPoints || [];
+    var wrap = document.getElementById("detailMapWrap");
+    destroyAmap(amapDetail, amapMarkersDetail);
+    amapDetail = null;
+    wrap.innerHTML = '<div id="amapDetail" class="map-amap"></div>';
+    function draw() {
+      amapDetail = buildAmap("amapDetail", page.mapCenter, page.mapZoom + 1, pts, true);
+    }
+    loadAmap(draw, function () {
+      fallbackMap(wrap, pts, "路线页 · 示意地图");
+    });
+  }
+
+  function loadAmap(onReady, onFail) {
+    if (window.AMap) {
+      onReady();
+      return;
+    }
+    if (amapLoadState === "loading") {
+      var n = 0;
+      var t = setInterval(function () {
+        if (window.AMap) {
+          clearInterval(t);
+          onReady();
+        } else if (++n > 40) {
+          clearInterval(t);
+          onFail();
+        }
+      }, 250);
+      return;
+    }
+    amapLoadState = "loading";
+    window._AMapSecurityConfig = { securityJsCode: AMAP_SECURITY_JS_CODE };
+    window.__amapAppInit = function () {
+      amapLoadState = "loaded";
+      onReady();
+    };
+    var s = document.createElement("script");
+    s.src = "https://webapi.amap.com/maps?v=2.0&key=" + encodeURIComponent(AMAP_KEY) + "&callback=__amapAppInit";
+    s.onerror = function () {
+      amapLoadState = "idle";
+      onFail();
+    };
+    document.head.appendChild(s);
+  }
+
+  function openPopup(title, body) {
+    document.getElementById("popupTitle").textContent = title;
+    document.getElementById("popupBody").textContent = body;
+    document.getElementById("mapPopup").classList.add("show");
+  }
+
+  function closePopup() {
+    document.getElementById("mapPopup").classList.remove("show");
+  }
+
+  document.getElementById("popupClose").addEventListener("click", closePopup);
+  document.getElementById("mapPopup").addEventListener("click", function (e) {
+    if (e.target.id === "mapPopup") closePopup();
+  });
+
+  function renderHomeHot() {
+    var wrap = document.getElementById("hotCities");
+    wrap.innerHTML = DATA.hotIds
+      .map(function (id) {
+        var c = DATA.cities.find(function (x) {
+          return x.id === id;
+        });
+        return c
+          ? '<button type="button" class="chip" data-city="' + c.id + '">' + c.name + "</button>"
+          : "";
+      })
+      .join("");
+    wrap.querySelectorAll(".chip").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openCity(btn.getAttribute("data-city"));
+      });
+    });
+  }
+
+  function renderSearch() {
+    var input = document.getElementById("citySearch");
+    var list = document.getElementById("suggestList");
+    function updateSuggest() {
+      var q = input.value.trim().toLowerCase();
+      list.innerHTML = "";
+      if (!q) {
+        list.classList.remove("show");
+        return;
+      }
+      var hits = DATA.cities.filter(function (c) {
+        return c.name.includes(q) || c.pinyin.includes(q) || c.id.includes(q);
+      });
+      hits.slice(0, 8).forEach(function (c) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = c.name + " · " + c.tagline;
+        b.addEventListener("click", function () {
+          input.value = c.name;
+          list.classList.remove("show");
+          openCity(c.id);
+        });
+        list.appendChild(b);
+      });
+      list.classList.toggle("show", hits.length > 0);
+    }
+    input.addEventListener("input", updateSuggest);
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".search-box-relative")) list.classList.remove("show");
+    });
+  }
+
+  document.getElementById("btnLocate").addEventListener("click", function () {
+    if (!navigator.geolocation) {
+      toast("浏览器不支持定位 · 打开默认城市");
+      openCity("xian");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function () {
+        toast("定位成功（演示）· 仍可手动切换城市");
+        openCity("xian");
+      },
+      function () {
+        toast("定位未授权 · 为您打开西安");
+        openCity("xian");
+      }
+    );
+  });
+
+  var region = "全部";
+  var cityType = "all";
+
+  function renderCityList() {
+    var regions = ["全部", "华北", "华东", "华南", "华中", "西南", "西北"];
+    var rf = document.getElementById("regionFilters");
+    rf.innerHTML = regions
+      .map(function (r) {
+        return '<button type="button" data-region="' + r + '" class="' + (r === region ? "is-on" : "") + '">' + r + "</button>";
+      })
+      .join("");
+    rf.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        region = b.getAttribute("data-region");
+        renderCityList();
+      });
+    });
+    document.querySelectorAll("#typeFilters button").forEach(function (b) {
+      b.classList.toggle("is-on", b.getAttribute("data-type") === cityType);
+    });
+    var grid = document.getElementById("cityGrid");
+    var filtered = DATA.cities.filter(function (c) {
+      var okRegion = region === "全部" || c.region === region;
+      var okType = cityType === "all" || c.type === cityType;
+      return okRegion && okType;
+    });
+    grid.innerHTML = filtered
+      .map(function (c) {
+        return (
+          '<article class="city-card">' +
+          '<img src="' +
+          c.img +
+          '" alt="' +
+          c.name +
+          '" />' +
+          '<div class="city-card-body">' +
+          "<h3>" +
+          c.name +
+          "</h3>" +
+          '<p class="tagline">' +
+          c.tagline +
+          '</p><button type="button" class="btn btn-primary js-open-city" data-city="' +
+          c.id +
+          '">查看攻略</button></div></article>'
+        );
+      })
+      .join("");
+    grid.querySelectorAll(".js-open-city").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openCity(btn.getAttribute("data-city"));
+      });
+    });
+  }
+
+  document.querySelectorAll("#typeFilters button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      cityType = b.getAttribute("data-type");
+      renderCityList();
+    });
+  });
+
+  function renderRoutes() {
+    var list = document.getElementById("routeList");
+    var routes = getCity().routes || [];
+    list.innerHTML = routes
+      .map(function (r, idx) {
+        return (
+          '<div class="route-item" data-idx="' +
+          idx +
+          '">' +
+          '<div class="route-head">' +
+          '<img src="' +
+          r.cover +
+          '" alt="" />' +
+          '<div class="route-meta">' +
+          "<h3>" +
+          r.name +
+          "</h3>" +
+          '<p class="meta-line">' +
+          r.duration +
+          " · " +
+          r.crowd +
+          "</p>" +
+          '<p class="meta-line" style="margin-top:0.35rem;color:#333">' +
+          r.highlight +
+          "</p></div>" +
+          '<div class="route-actions">' +
+          '<button type="button" class="btn btn-accent btn-toggle">展开 / 收起</button>' +
+          '<button type="button" class="btn btn-primary btn-detail">路线详情页</button>' +
+          '<button type="button" class="btn btn-outline btn-copy">复制摘要</button>' +
+          '<button type="button" class="btn btn-outline btn-share">分享链接</button>' +
+          '<button type="button" class="btn btn-outline btn-app">同步 APP</button>' +
+          "</div></div>" +
+          '<div class="route-body">' +
+          "<p><strong>亮点：</strong>" +
+          r.highlight +
+          "</p>" +
+          "<p style='margin:0.5rem 0'><strong>行程安排：</strong></p>" +
+          "<ul class='timeline'>" +
+          r.timeline
+            .map(function (line) {
+              return "<li>" + line + "</li>";
+            })
+            .join("") +
+          "</ul>" +
+          "<p style='margin-top:0.75rem;font-size:0.9rem;color:#666'>" +
+          r.tips +
+          "</p></div></div>"
+        );
+      })
+      .join("");
+    list.querySelectorAll(".route-item").forEach(function (item) {
+      var idx = parseInt(item.getAttribute("data-idx"), 10);
+      var route = routes[idx];
+      item.querySelector(".btn-toggle").addEventListener("click", function (e) {
+        e.stopPropagation();
+        item.classList.toggle("expanded");
+      });
+      item.querySelector(".route-head").addEventListener("click", function (e) {
+        if (e.target.closest("button")) return;
+        item.classList.toggle("expanded");
+      });
+      item.querySelector(".btn-detail").addEventListener("click", function (e) {
+        e.stopPropagation();
+        openRouteDetail(route);
+      });
+      item.querySelector(".btn-copy").addEventListener("click", function (e) {
+        e.stopPropagation();
+        var text = route.name + "\n" + route.timeline.join("\n");
+        navigator.clipboard.writeText(text).then(
+          function () {
+            toast("路线已复制到剪贴板");
+          },
+          function () {
+            toast("复制失败 · 请手动选择文字复制");
+          }
+        );
+      });
+      item.querySelector(".btn-share").addEventListener("click", function (e) {
+        e.stopPropagation();
+        var url = location.origin + location.pathname + "#route=" + route.id;
+        navigator.clipboard.writeText(url).then(
+          function () {
+            toast("分享链接已复制（含路线 ID）");
+          },
+          function () {
+            toast(url);
+          }
+        );
+      });
+      item.querySelector(".btn-app").addEventListener("click", function (e) {
+        e.stopPropagation();
+        toast("演示：调用 APP 深度链接 / SDK 同步");
+      });
+    });
+  }
+
+  function renderTabs(containerId, keys, activeKey, onChange) {
+    var el = document.getElementById(containerId);
+    el.innerHTML = keys
+      .map(function (k) {
+        return '<button type="button" data-k="' + k + '" class="' + (k === activeKey ? "active" : "") + '">' + k + "</button>";
+      })
+      .join("");
+    el.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        onChange(b.getAttribute("data-k"));
+      });
+    });
+  }
+
+  var attrTab = "全部";
+  var foodTab = "全部";
+  var xhsTab = "全部";
+
+  function renderAttractions() {
+    var cats = ["全部", "热门", "人文", "自然", "亲子"];
+    renderTabs("attrTabs", cats, attrTab, function (k) {
+      attrTab = k;
+      renderAttractions();
+    });
+    var grid = document.getElementById("attrGrid");
+    var items = (getCity().attractions || []).filter(function (a) {
+      return attrTab === "全部" || a.cat === attrTab;
+    });
+    grid.innerHTML = items
+      .map(function (a) {
+        return (
+          '<article class="media-card">' +
+          '<img src="' +
+          a.img +
+          '" alt="" data-lightbox />' +
+          '<div class="body">' +
+          "<h4>" +
+          a.title +
+          ' <span class="tag-pill" style="font-size:0.75rem">' +
+          a.cat +
+          "</span></h4>" +
+          "<p>" +
+          a.desc +
+          '</p><button type="button" class="btn btn-outline js-goto-route" style="margin-top:0.5rem;font-size:0.85rem;padding:0.35rem 0.65rem" data-rid="' +
+          a.routeId +
+          '">查看关联路线</button></div></article>'
+        );
+      })
+      .join("");
+    bindRouteButtons(grid);
+    bindLightbox(grid);
+  }
+
+  function renderFoods() {
+    var cats = ["全部", "小吃", "老字号", "网红", "亲子"];
+    renderTabs("foodTabs", cats, foodTab, function (k) {
+      foodTab = k;
+      renderFoods();
+    });
+    var grid = document.getElementById("foodGrid");
+    var items = (getCity().foods || []).filter(function (a) {
+      return foodTab === "全部" || a.cat === foodTab;
+    });
+    grid.innerHTML = items
+      .map(function (a) {
+        return (
+          '<article class="media-card">' +
+          '<img src="' +
+          a.img +
+          '" alt="" data-lightbox />' +
+          '<div class="body">' +
+          "<h4>" +
+          a.title +
+          "</h4>" +
+          "<p>" +
+          a.desc +
+          '</p><button type="button" class="btn btn-outline js-goto-route" style="margin-top:0.5rem;font-size:0.85rem;padding:0.35rem 0.65rem" data-rid="' +
+          a.routeId +
+          '">可搭配路线</button></div></article>'
+        );
+      })
+      .join("");
+    bindRouteButtons(grid);
+    bindLightbox(grid);
+  }
+
+  function renderXhs() {
+    var cats = ["全部", "路线", "避坑", "美食", "贴士", "反馈"];
+    renderTabs("xhsTabs", cats, xhsTab, function (k) {
+      xhsTab = k;
+      renderXhs();
+    });
+    var grid = document.getElementById("xhsGrid");
+    var itemsPre = getCity().xhs || [];
+    var items = itemsPre.filter(function (a) {
+      if (xhsTab === "全部") return true;
+      if (xhsTab === "反馈") return a.cat === "反馈";
+      return a.cat === xhsTab;
+    });
+    var cityName = (DATA.cities.find(function (c) { return c.id === currentCityId; }) || {}).name || "";
+    grid.innerHTML = items
+      .map(function (a) {
+        var fb = (a.feedback || [])
+          .map(function (f) {
+            return '<div class="xhs-feedback"><strong>@' + f.u + "</strong> " + f.t + "</div>";
+          })
+          .join("");
+        var searchK = (a.keywords && a.keywords.length ? a.keywords.join(" ") + " " : "") + cityName + " " + a.title;
+        return (
+          '<article class="media-card xiaohongshu-card">' +
+          '<div class="body">' +
+          "<h4>[" +
+          a.cat +
+          "] " +
+          a.title +
+          "</h4>" +
+          "<p>" +
+          a.body +
+          "</p>" +
+          '<div class="xhs-meta">' +
+          '<span class="xhs-stat">赞 ' +
+          a.likes +
+          "</span>" +
+          '<span class="xhs-stat">收藏 ' +
+          a.collections +
+          "</span>" +
+          '<span class="xhs-stat">评 ' +
+          a.comments +
+          "</span>" +
+          "</div>" +
+          (fb ? '<div style="margin-top:0.35rem"><strong style="font-size:0.8rem;color:#666">用户反馈</strong>' + fb + "</div>" : "") +
+          '<p style="font-size:0.78rem;color:#999;margin:0.45rem 0">@' +
+          a.author +
+          ' · 互动量为演示数据 · 非官方爬虫结果</p>' +
+          '<div class="xhs-actions">' +
+          '<a class="btn btn-accent" style="display:inline-block;text-decoration:none;padding:0.35rem 0.65rem;font-size:0.85rem;border-radius:8px;color:#fff" href="' +
+          xhsSearchUrl(searchK) +
+          '" target="_blank" rel="noopener">去小红书搜索</a>' +
+          '<button type="button" class="btn btn-outline js-xhs-share" style="font-size:0.85rem;padding:0.35rem 0.65rem">复制分享文案</button>' +
+          '<button type="button" class="btn btn-outline js-goto-route" style="font-size:0.85rem;padding:0.35rem 0.65rem" data-rid="' +
+          a.routeId +
+          '">关联路线</button>' +
+          '<button type="button" class="btn btn-primary js-fav" style="font-size:0.85rem;padding:0.35rem 0.65rem">收藏</button>' +
+          "</div></div></article>"
+        );
+      })
+      .join("");
+    bindRouteButtons(grid);
+    grid.querySelectorAll(".js-fav").forEach(function (b) {
+      b.addEventListener("click", function () {
+        toast("已加入收藏（演示）");
+      });
+    });
+    Array.prototype.forEach.call(grid.querySelectorAll("article.xiaohongshu-card"), function (art, idx) {
+      var a = items[idx];
+      if (!a) return;
+      var shareText =
+        "【一城玩透】" +
+        cityName +
+        "｜" +
+        a.title +
+        "\n" +
+        a.body +
+        "\n（演示文案 · 合规发布请标注来源与免责声明）";
+      var sb = art.querySelector(".js-xhs-share");
+      if (sb) {
+        sb.addEventListener("click", function () {
+          navigator.clipboard.writeText(shareText).then(
+            function () {
+              toast("分享文案已复制，可粘贴到小红书编辑框");
+            },
+            function () {
+              toast("复制失败");
+            }
+          );
+        });
+      }
+    });
+  }
+
+  function bindRouteButtons(root) {
+    root.querySelectorAll(".js-goto-route").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var rid = btn.getAttribute("data-rid");
+        var cid = cityIdForRoute(rid);
+        if (cid) currentCityId = cid;
+        var route = routeById(rid);
+        if (route) openRouteDetail(route);
+        else toast("未找到对应路线");
+      });
+    });
+  }
+
+  function bindLightbox(root) {
+    if (!root) return;
+    root.querySelectorAll("img[data-lightbox]").forEach(function (img) {
+      img.addEventListener("click", function () {
+        document.getElementById("lbImg").src = img.src;
+        document.getElementById("imgLightbox").classList.add("show");
+      });
+    });
+  }
+
+  document.getElementById("lbClose").addEventListener("click", function () {
+    document.getElementById("imgLightbox").classList.remove("show");
+  });
+  document.getElementById("imgLightbox").addEventListener("click", function (e) {
+    if (e.target.id === "imgLightbox") document.getElementById("imgLightbox").classList.remove("show");
+  });
+
+  document.getElementById("navHome").addEventListener("click", function () {
+    showPage("home");
+  });
+  document.querySelectorAll(".nav-links button[data-page]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var p = b.getAttribute("data-page");
+      if (p === "city") openCity(currentCityId);
+      else showPage(p);
+    });
+  });
+  document.getElementById("backFromCity").addEventListener("click", function () {
+    showPage("home");
+  });
+  document.getElementById("bcHome").addEventListener("click", function () {
+    showPage("home");
+  });
+  document.getElementById("bcCity").addEventListener("click", function () {
+    showPage("city");
+  });
+  document.getElementById("rdBack").addEventListener("click", function () {
+    showPage("city");
+  });
+
+  document.getElementById("rdCopy").addEventListener("click", function () {
+    var r = window.__currentRoute;
+    if (!r) return;
+    var text = r.detailTitle + "\n" + r.timeline.join("\n");
+    navigator.clipboard.writeText(text).then(
+      function () {
+        toast("时间表已复制");
+      },
+      function () {
+        toast("复制失败");
+      }
+    );
+  });
+  document.getElementById("rdShare").addEventListener("click", function () {
+    var r = window.__currentRoute;
+    if (!r) return;
+    var url = location.href.split("#")[0] + "#route=" + r.id;
+    navigator.clipboard.writeText(url).then(
+      function () {
+        toast("路线分享链接已复制");
+      },
+      function () {
+        toast(url);
+      }
+    );
+  });
+  document.getElementById("rdSync").addEventListener("click", function () {
+    toast("演示：打开 APP 并写入当前路线 ID");
+  });
+
+  function boot() {
+    renderHomeHot();
+    renderSearch();
+    renderCityList();
+    applyCityToDom();
+    bindLightbox(document);
+    var hash = location.hash.replace("#", "");
+    if (hash.indexOf("route=") === 0) {
+      var rid = hash.split("=")[1];
+      var rt = routeById(rid);
+      if (rt) {
+        var fc = cityIdForRoute(rid);
+        if (fc) currentCityId = fc;
+        applyCityToDom();
+        openRouteDetail(rt);
+      }
+    }
+  }
+
+  boot();
+})();
+  </script>
+</body>
+</html>
